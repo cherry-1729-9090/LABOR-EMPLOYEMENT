@@ -10,9 +10,7 @@ function App() {
 
   return (
     <div className="App">
-      <Loginpage mobileNumber={mobileNumber} setMobileNumber={setMobileNumber} />
-      <OtpVerification mobileNumber={mobileNumber} />
-      <RoleSelectionpage  />
+      <Loginpage />
     </div>
   );
 }
