@@ -4,8 +4,8 @@ const equipmentController = require('../controllers/equipmentController');
 
 router.post('/', equipmentController.createEquipment);
 router.get('/', equipmentController.getAllEquipment);
-router.get('/:id', equipmentController.getEquipmentById);
-router.put('/:id', equipmentController.updateEquipment);
-router.delete('/:id', equipmentController.deleteEquipment);
+router.get('/get/:id', equipmentController.getEquipmentById);
+router.put('/update/:id', equipmentController.updateEquipment);
+router.delete('/delete/:id', equipmentController.deleteEquipment);
 
 module.exports = router;
