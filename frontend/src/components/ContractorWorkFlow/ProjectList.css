@@ -1,0 +1,101 @@
+.project-list-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.project-list {
+  width: 100%;
+  max-width: 1200px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+h2 {
+  font-size: 32px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.project-items {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.project-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.project-name {
+  font-size: 20px;
+  color: #555;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.project-status {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #fff;
+  margin-left: 10px;
+}
+
+.project-status.in-progress {
+  background-color: #ffab00;
+}
+
+.project-status.completed {
+  background-color: #4caf50;
+}
+
+.status-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.status-button:hover {
+  background-color: #43a047;
+}
+
+.add-button {
+  padding: 20px;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.add-button:hover {
+  background-color: #ff5252;
+}
