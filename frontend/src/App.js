@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <Loginpage mobileNumber={mobileNumber} setMobileNumber={setMobileNumber} />
       <OtpVerification mobileNumber={mobileNumber} />
-      {/* <RoleSelectionpage  /> */}
+      <RoleSelectionpage  />
     </div>
   );
 }
