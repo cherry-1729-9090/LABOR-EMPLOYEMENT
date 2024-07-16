@@ -1,0 +1,20 @@
+.BrwOwnerDetails{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+.Brwowner{
+    display: flex;
+    flex-direction: column;
+    align-items: center;   
+    height: 70vh;
+}
+
+.brwownerdet p{
+    width: 80vw;
+    height: 5vh;
+}

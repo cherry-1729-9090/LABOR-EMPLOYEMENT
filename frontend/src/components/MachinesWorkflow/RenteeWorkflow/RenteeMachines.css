@@ -1,0 +1,50 @@
+.RenteeMachines{
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    padding: 25px
+}
+
+.MachinesSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    overflow-y: auto;
+
+}
+
+.machineItem{
+    margin: 10px;
+    width: 90vw;
+    height: 15vh;
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: rgb(255, 255, 255);
+    z-index: -50;
+}
+
+img{
+    border: 1px solid black;
+    margin: 10px;
+}
+.machineDet{
+    width: 40%;
+    align-items: center;
+}
+
+.machineRating{
+    margin: 10px;
+    padding: 5px;
+    background-color: #ECA5A5;
+    color: white;
+}
+
