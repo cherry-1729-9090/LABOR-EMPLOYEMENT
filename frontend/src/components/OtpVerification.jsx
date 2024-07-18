@@ -1,68 +1,106 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Input, Button } from 'antd';
+import 'antd/dist/reset.css';
 import './OtpVerification.css';
+import { createUser, getUserById } from '../calls/userCalls';
+import { useNavigate } from 'react-router-dom';
 
-function OtpVerification() {
-  function handleOtp(e) {
-    const input = e.target;
-    const key = e.key;
+function OtpVerification({ mobileNumber }) {
+  const [otpValues, setOtpValues] = useState(Array(6).fill(''));
+  const navigate = useNavigate();
 
-    if (!/^[0-9]$/.test(key) && key !== 'Backspace') {
-      e.preventDefault();
-      return;
-    }
+  function handleOtpChange(e, index) {
+    const value = e.target.value;
 
-    if (/^[0-9]$/.test(key)) {
-      input.value = key; 
-      const nextInput = input.nextElementSibling;
-      if (nextInput && nextInput.tagName === 'INPUT') {
-        setTimeout(() => nextInput.focus(), 10); 
+    if (/^[0-9]$/.test(value) || value === '') {
+      const newOtpValues = [...otpValues];
+      newOtpValues[index] = value;
+      setOtpValues(newOtpValues);
+
+      if (value && index < otpValues.length - 1) {
+        setTimeout(() => {
+          document.querySelectorAll('.otpInp')[index + 1].focus();
+        }, 10);
       }
-    } 
-
-    else if (key === 'Backspace') {
-      input.value = ''; 
-      const prevInput = input.previousElementSibling;
-      if (prevInput && prevInput.tagName === 'INPUT') {
-        setTimeout(() => prevInput.focus(), 10); 
-      }
-    } 
-    
-    else {
-      e.preventDefault(); 
     }
   }
 
-  // auto detect function and entering the otp
+  function handleKeyDown(e, index) {
+    if (e.key === 'Backspace' && otpValues[index] === '') {
+      if (index > 0) {
+        setTimeout(() => {
+          document.querySelectorAll('.otpInp')[index - 1].focus();
+        }, 10);
+      }
+    }
+  }
+
   function handlePaste(e) {
     const paste = e.clipboardData.getData('text');
-    const inputs = document.querySelectorAll('.otpInp');
-    inputs.forEach((input, index) => {
-      input.value = paste[index] || '';
-    });
-    inputs[paste.length]?.focus();
+    const newOtpValues = paste.split('').slice(0, 6);
+    setOtpValues(newOtpValues.concat(Array(6 - newOtpValues.length).fill('')));
+    setTimeout(() => {
+      document.querySelectorAll('.otpInp')[newOtpValues.length]?.focus();
+    }, 10);
   }
 
-
-  function VerifyOtp(){
+  async function handleSubmit() {
+    const values = otpValues.join('');
+    console.log(values);
     
+    try {
+      const response = await fetch('http://localhost:5000/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          mobileNumber: mobileNumber,
+          otpCode: values
+        })
+      });
+      const data = await response.json();
+      console.log(data);
 
+      if (data.message === 'OTP verified successfully') {
+        try {
+          const user = await getUserById(mobileNumber); // Assuming mobileNumber is used as the user ID
+          if (user) {
+            navigate('/login');
+          } else {
+            // User does not exist, create new user
+            await createUser({ mobileNumber: mobileNumber });
+            // Navigate to a different page after creating the user
+            navigate('/welcome'); // Replace '/welcome' with your desired route
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
-
 
   return (
     <div className='otpPage'>
       <div className='otpUpDiv'>
         <h1>Please enter the OTP</h1>
         <div className='otpDiv' onPaste={handlePaste}>
-          <input type='text' className='otpInp' onKeyDown={handleOtp} maxLength={1} />
-          <input type='text' className='otpInp' onKeyDown={handleOtp} maxLength={1} />
-          <input type='text' className='otpInp' onKeyDown={handleOtp} maxLength={1} />
-          <input type='text' className='otpInp' onKeyDown={handleOtp} maxLength={1} />
-          <input type='text' className='otpInp' onKeyDown={handleOtp} maxLength={1} />
-          <input type='text' className='otpInp' onKeyDown={handleOtp} maxLength={1} />
+          {otpValues.map((value, index) => (
+            <Input
+              key={index}
+              className='otpInp'
+              maxLength={1}
+              value={value}
+              onChange={(e) => handleOtpChange(e, index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              style={{ width: '40px', textAlign: 'center', margin: '0 5px' }}
+            />
+          ))}
         </div>
       </div>
-      <button>Submit</button>
+      <Button type="primary" onClick={handleSubmit}>Submit</Button>
     </div>
   );
 }
