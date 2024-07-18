@@ -1,17 +1,12 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Loginpage from './components/Loginpage'; // Make sure the import path is correct
-import OtpVerification from './components/OtpVerification';
-import RoleSelectionpage from './components/RoleSelectionpage';
+import React from 'react';
+import { ConfigProvider } from 'antd';
+import RoleSelection from './components/RoleSelection';
 
 function App() {
-  const [mobileNumber, setMobileNumber] = useState('');
-
   return (
-    <div className="App">
-      <Loginpage />
-    </div>
+    <ConfigProvider>
+      <RoleSelection />
+    </ConfigProvider>
   );
 }
 
