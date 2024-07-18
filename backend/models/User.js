@@ -1,4 +1,6 @@
 // models/User.js
+import mongoose from 'mongoose';
+import Skills from './Skills';
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
@@ -7,7 +9,7 @@ const Schema = mongoose.Schema;
 const userTypes = {
   LABOR_WORKER: "labor_worker",
   CONTRACTOR: "contractor",
-  GENERAL : "general"
+  GENERAL: "general"
 };
 
 const userSchema = new Schema({
