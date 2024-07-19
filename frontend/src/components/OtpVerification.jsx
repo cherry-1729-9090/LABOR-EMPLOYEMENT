@@ -71,12 +71,12 @@ function OtpVerification({ mobileNumber }) {
           const user = await getUserByNumber(mobileNumber); 
           if (user) {
             setUserId(user._id);
-            navigate('/RoleSelection');
+            navigate('/role-selction');
           } else {
             await createUser({ mobileNumber: mobileNumber });
             const newUser = await getUserByNumber(mobileNumber);
             setUserId(newUser._id);
-            navigate('/RoleSelection'); 
+            navigate('/user-details'); 
           }
         } catch (err) {
           console.error(err);
