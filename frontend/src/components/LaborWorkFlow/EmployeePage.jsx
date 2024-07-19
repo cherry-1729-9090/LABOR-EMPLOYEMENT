@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form, Input, Button, Upload, Card, Image, message } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-import { RegisterEmployee } from "../calls/employees"; // API call to save employee details
+import { GetEmployeeDetails,RegisterEmployee } from "../../calls/employees"; // API call to save employee details
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 function EmployeePage({ contactNumber }) {

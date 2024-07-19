@@ -4,6 +4,30 @@ import { useParams, useNavigate } from 'react-router-dom';
 const EmployeeDetails = ({ applications, rejectEmployee }) => {
   const { employeeId } = useParams();
   const navigate = useNavigate();
+
+  console.log('Employee ID from params:', employeeId);
+  console.log('Applications object:', applications);
+
+  // Check if the employeeId exists in the applications object
+  if (!applications || !applications[employeeId]) {
+    console.error('Employee not found:', employeeId);
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
+          <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
+            Employee not found
+          </h2>
+          <button 
+            className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            onClick={() => navigate('/project-applications')}
+          >
+            Back to Applications
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const employee = applications[employeeId];
 
   const handleReject = () => {
@@ -14,7 +38,9 @@ const EmployeeDetails = ({ applications, rejectEmployee }) => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">Applicant Name: {employee.name}</h2>
+        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
+          Applicant Name: {employee.name}
+        </h2>
         <div className="space-y-4">
           <div className="p-4 border border-gray-300 rounded-lg">
             <span className="font-medium text-gray-700">Mobile Number:</span> {employee.mobile}
