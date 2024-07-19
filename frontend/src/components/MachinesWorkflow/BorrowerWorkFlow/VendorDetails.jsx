@@ -1,63 +1,79 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import './VendorDetails.css';
+import { Card, Button, Typography, Image, Row, Col } from 'antd';
+import './MachinesRented.css';
+import { getPurchaseTransactionByBuyerId } from '../../../calls/PurchaseTransactionsCalls';
+import { useAppContext } from '../../GlobalContext';
+import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000/vendor/';
+const { Title, Text } = Typography;
 
-function VendorDetails({ vendorId }) {
-    const [vendorDetails, setVendorDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+function MachinesRented() {
+    const [machinesRented, setMachinesRented] = useState([]);
+    const { userId, setMachineOwnerId } = useAppContext();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchVendorDetails = async () => {
+        async function fetchMachines() {
             try {
-                const response = await fetch(`${API_URL}${vendorId}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch vendor details');
-                }
-                const data = await response.json();
-                setVendorDetails(data);
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
+                const transactions = await getPurchaseTransactionByBuyerId(userId);
+                const machines = transactions.map(transaction => transaction.equipmentId);
+                setMachinesRented(machines);
+            } catch (err) {
+                console.log(err);
             }
-        };
+        }
+        fetchMachines();
+    }, [userId]);
 
-        fetchVendorDetails();
-    }, [vendorId]);
-
-    if (loading) {
-        return <p>Loading vendor details...</p>;
+    function handleRentMachine() {
+        navigate('/machines/borrower/machines-for-rent');
     }
 
-    if (error) {
-        return <p>Error: {error}</p>;
+    function handleMachineClick(machine) {
+        if (machine.availabilityStatus === 'In Usage') {
+            setMachineOwnerId(machine.ownerId);
+            navigate('/machines/borrower/vendor-details');
+        }
     }
-
-    const { profilePic, name, mobile, location, amountToBePaid, remainingContractTime } = vendorDetails;
 
     return (
-        <div className='vendor-details'>
-            <h1>Vendor Details</h1>
-            <div className='vendor-info'>
-                <img src={profilePic} alt="Vendor Profile Pic" className='vendor-profile-pic' />
-                <div>
-                    <p className='vendor-detail'>Name: {name}</p>
-                    <p className='vendor-detail'>Mobile Number: {mobile}</p>
-                    <p className='vendor-detail'>Location: {location}</p>
-                    <p className='vendor-detail'>Amount to be Paid: {amountToBePaid}</p>
-                    <p className='vendor-detail'>Remaining Contract Time: {remainingContractTime}</p>
-                </div>
-            </div>
-            <button>Contact Vendor</button>
+        <div className='MachinesRented'>
+            <Title level={1}>Your Machines</Title>
+            <section className='MachinesBox'>
+                {machinesRented.length > 0 ? (
+                    <Row gutter={[16, 16]}>
+                        {machinesRented.map(machine => (
+                            <Col key={machine._id} xs={24} sm={12} md={8} lg={6}>
+                                <Card
+                                    hoverable
+                                    cover={<Image alt={machine.name} src={machine.imageUrl || '#'} />}
+                                    onClick={() => handleMachineClick(machine)}
+                                >
+                                    <Card.Meta
+                                        title={machine.name}
+                                        description={
+                                            <>
+                                                <Text>{machine.availabilityStatus}</Text>
+                                                <br />
+                                                <Text>Rating: {machine.rating || 0}⭐</Text>
+                                            </>
+                                        }
+                                    />
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                ) : (
+                    <div>
+                        <Title level={2}>No Machines Rented</Title>
+                    </div>
+                )}
+                <Button type="primary" style={{ marginTop: '20px' }} onClick={handleRentMachine}>
+                    Rent a Machine
+                </Button>
+            </section>
         </div>
     );
 }
 
-VendorDetails.propTypes = {
-    vendorId: PropTypes.string.isRequired,
-};
-
-export default VendorDetails;
+export default MachinesRented;

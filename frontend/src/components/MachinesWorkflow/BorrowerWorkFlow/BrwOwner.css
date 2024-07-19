@@ -1,20 +1,18 @@
-.BrwOwnerDetails{
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
+/* BrwOwner.css */
+
+.BrwOwnerDetails {
+    padding: 20px;
+    background-color: #f9f9f9;
 }
 
-.Brwowner{
-    display: flex;
-    flex-direction: column;
-    align-items: center;   
-    height: 70vh;
+.ant-card {
+    border-radius: 8px;
 }
 
-.brwownerdet p{
-    width: 80vw;
-    height: 5vh;
+.ant-card-body {
+    padding: 24px;
+}
+
+.ant-btn-primary {
+    margin-top: 16px;
 }

@@ -61,10 +61,10 @@ function App() {
               <Route path="add-project-step1" element={<AddProjectStep1 />} />
               <Route path="add-project-step2" element={<AddProjectStep2 />} />
               <Route path="add-project-step3" element={<AddProjectStep3 />} />
-              <Route path="employee-details" element={<EmployeeDetails />} /> 
-              <Route path="project-applications" element={<ProjectApplications />} /> 
-              <Route path="project-details" element={<ProjectDetails />} /> 
-              <Route path="project-list" element={<ProjectList />} /> {/*not working */}
+              <Route path="employee-details" element={<EmployeeDetails />} />
+              <Route path="project-applications" element={<ProjectApplications />} />
+              <Route path="project-details" element={<ProjectDetails />} />
+              <Route path="project-list" element={<ProjectList />} />
             </Route>
 
             {/* Labor Workflow */}
@@ -75,7 +75,6 @@ function App() {
               <Route path="contract" element={<ContractPage />} />
               <Route path="employee" element={<EmployeePage />} />
               <Route path="home" element={<HomePage />} />
-              {/* <Route path="job-listening" element={<JobListening />} /> not working */}
               <Route path="main" element={<MainPage />} />
               <Route path="ongoing" element={<OngoingPage />} />
               <Route path="work-information" element={<WorkInformationPage />} />
@@ -87,6 +86,7 @@ function App() {
             <Route path="/machines">
               {/* Borrower */}
               <Route path="borrower">
+                <Route path="machines-for-rent" element={<MachinesForRent />} />
                 <Route path="brw-machine-details" element={<BrwMachineDetails />} />
                 <Route path="brw-owner-details" element={<BrwOwnerDetails />} />
                 <Route path="machines-available" element={<MachinesAvailable />} />
