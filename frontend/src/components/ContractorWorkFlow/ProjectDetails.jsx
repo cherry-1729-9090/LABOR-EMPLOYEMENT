@@ -4,6 +4,27 @@ import { useParams, useNavigate } from 'react-router-dom';
 const ProjectDetails = ({ projects }) => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+
+  // Ensure that projects and the project with projectId exist
+  if (!projects || !projects[projectId]) {
+    console.error('Project not found:', projectId);
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
+          <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
+            Project not found
+          </h2>
+          <button 
+            className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            onClick={() => navigate('/project-list')}
+          >
+            Back to Projects
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const project = projects[projectId];
 
   return (
