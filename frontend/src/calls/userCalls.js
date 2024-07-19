@@ -10,6 +10,17 @@ const getUserById = async (id) => {
     }
 }
 
+
+const getUserByNumber = async (mobileNumber) => {
+    try {
+        const response = await axiosInstance.get(`/users/getbynumber/${mobileNumber}`);
+        return response.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
+
+
 const getAllUsers = async () => {
     try {
         const response = await axiosInstance.get('/users/getall');
@@ -47,5 +58,7 @@ const deleteUser = async (id) => {
     }
 }
 
-export { getUserById, getAllUsers, updateUser, createUser, deleteUser };
+
+
+export { getUserById, getAllUsers, updateUser, createUser, deleteUser,getUserByNumber };
 
