@@ -50,3 +50,22 @@ exports.deleteEquipment = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+exports.getEquipmentByUserId = async (req, res) => {
+    try {
+        const equipment = await Equipment.find({ postedBy: req.params.id }).populate('postedBy');
+        res.json(equipment);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+exports.getEquipmentByCategory = async (req, res) => {
+    try {
+        const equipment = await Equipment.find({ category: req.params.category }).populate('postedBy');
+        res.json(equipment);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}

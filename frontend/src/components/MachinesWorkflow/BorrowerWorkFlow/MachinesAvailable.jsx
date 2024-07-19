@@ -1,115 +1,97 @@
 import React, { useEffect, useState } from 'react';
+import { Select, Card, Row, Col, Typography } from 'antd';
+import { useAppContext } from '../../GlobalContext';
+import { getEquipmentByCategory } from '../../../calls/equipmentCalls';
 import './MachinesAvailable.css';
+import { useNavigate } from 'react-router-dom';
+
+
+const { Title } = Typography;
+const { Option } = Select;
 
 function MachinesAvailable() {
     const [machinesAvl, setMachinesAvl] = useState([]);
+    const [sortedMachines, setSortedMachines] = useState([]);
+    const { category, setMachineId } = useAppContext(); // Destructure setMachineId
+    const navigate = useNavigate();
+
 
     useEffect(() => {
-        // Simulating fetching data from an API
-        const fetchData = async () => {
+        const fetchMachines = async () => {
             try {
-                const response = await fetch('');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch machines data');
-                }
-                const data = await response.json();
+                const data = await getEquipmentByCategory(category);
                 setMachinesAvl(data);
+                setSortedMachines(data);
             } catch (error) {
-                console.error('Error fetching machines:', error);
+                console.log(error);
             }
         };
 
-        fetchData();
-    }, []);
+        fetchMachines();
+    }, [category]);
+
+    const handleSortChange = (value) => {
+        let sorted = [...machinesAvl];
+        switch (value) {
+            case 'rating':
+                sorted.sort((a, b) => b.rating - a.rating);
+                break;
+            case 'location':
+                sorted.sort((a, b) => a.location.localeCompare(b.location));
+                break;
+            case 'price':
+                sorted.sort((a, b) => a.price - b.price);
+                break;
+            default:
+                // Default case: no sorting
+                sorted = [...machinesAvl];
+        }
+        setSortedMachines(sorted);
+    };
+
+    const handleMachineClick = (id) => {
+        setMachineId(id); // Set the selected machine ID
+        navigate('/machines/borrower/brw-machine-details'); // Navigate to the machine details page
+    };
 
     return (
         <div className='MachinesAvailable'>
-            <h1>Machines Available</h1>
-            <div className='sortOption'>
-                <select>
-                    <option value=''>Sort By</option>
-                    <option value='rating'>Rating</option>
-                    <option value='location'>Location</option>
-                    <option value='price'>Price</option>
-                </select>
+            <div className='header'>
+                <Title level={1}>Machines Available</Title>
+                <Select
+                    defaultValue=''
+                    onChange={handleSortChange}
+                    style={{ width: '200px' }}
+                >
+                    <Option value=''>Sort By</Option>
+                    <Option value='rating'>Rating</Option>
+                    <Option value='location'>Location</Option>
+                    <Option value='price'>Price</Option>
+                </Select>
             </div>
 
-            <div className='machineItem'>
-                <img src='' alt='Machine' />
-                <div>
-                    <h3>Machine Name</h3>
-                    <p>Location</p>
-                </div>
-                <p>Rating : 0 ⭐</p>
-            </div>
-
-            <div className='machineItem'>
-                <img src='' alt='Machine' />
-                <div>
-                    <h3>Machine Name</h3>
-                    <p>Location</p>
-                </div>
-                <p>Rating : 0 ⭐</p>
-            </div>
-
-            <div className='machineItem'>
-                <img src='' alt='Machine' />
-                <div>
-                    <h3>Machine Name</h3>
-                    <p>Location</p>
-                </div>
-                <p>Rating : 0 ⭐</p>
-            </div>
-
-            <div className='machineItem'>
-                <img src='' alt='Machine' />
-                <div>
-                    <h3>Machine Name</h3>
-                    <p>Location</p>
-                </div>
-                <p>Rating : 0 ⭐</p>
-            </div>
-
-            <div className='machineItem'>
-                <img src='' alt='Machine' />
-                <div>
-                    <h3>Machine Name</h3>
-                    <p>Location</p>
-                </div>
-                <p>Rating : 0 ⭐</p>
-            </div>
-
-            <div className='machineItem'>
-                <img src='' alt='Machine' />
-                <div>
-                    <h3>Machine Name</h3>
-                    <p>Location</p>
-                </div>
-                <p>Rating : 0 ⭐</p>
-            </div>
-
-
-            <div className='machineItem'>
-                <img src='' alt='Machine' />
-                <div>
-                    <h3>Machine Name</h3>
-                    <p>Location</p>
-                </div>
-                <p>Rating : 0 ⭐</p>
-            </div>
-
-            <div className='AvailableMachines'>
-                {machinesAvl.map((machine, index) => (
-                    <div className='machineItem' key={index}>
-                        <img src={machine.image} alt='Machine' />
-                        <div>
-                            <h3>{machine.name}</h3>
-                            <p>{machine.location}</p>
-                        </div>
-                        <p>Rating : {machine.rating} ⭐</p>
-                    </div>
+            <Row gutter={16} className='AvailableMachines'>
+                {sortedMachines.map((machine) => (
+                    <Col span={8} key={machine.id}>
+                        <Card
+                            hoverable
+                            cover={<img alt={machine.name} src={machine.image} />}
+                            onClick={() => handleMachineClick(machine.id)} // Add onClick handler
+                        >
+                            <Card.Meta
+                                title={machine.name}
+                                description={
+                                    <>
+                                        <p>{machine.location}</p>
+                                        <p>Rating: {machine.rating} ⭐</p>
+                                        <p>Price: ${machine.price}</p>
+                                    </>
+                                }
+                            />
+                        </Card>
+                    </Col>
                 ))}
-            </div>
+            </Row>
         </div>
     );
 }
