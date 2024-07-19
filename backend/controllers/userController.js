@@ -1,5 +1,7 @@
 // controllers/UserController.js
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 exports.createUser = async (req, res) => {
     try {
@@ -10,6 +12,8 @@ exports.createUser = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -31,6 +35,21 @@ exports.getUserById = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+exports.getUserByNumber = async(req, res) => {
+    try {
+        const user = await User.findOne({ mobileNumber: req.params.mobileNumber });
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
 };
 
 exports.updateUser = async (req, res) => {

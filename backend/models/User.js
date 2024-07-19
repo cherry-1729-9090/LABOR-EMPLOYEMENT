@@ -17,7 +17,8 @@ const userSchema = new Schema({
   lastName: { type: String, required: true },
   phone: { type: String, required: true },
   userType: { type: String, required: true, enum: Object.values(userTypes) },
-  location: { type: String, required: true }
+  location: { type: String, required: true },
+  token : { type: String },
 });
 
 const User = mongoose.model('User', userSchema);

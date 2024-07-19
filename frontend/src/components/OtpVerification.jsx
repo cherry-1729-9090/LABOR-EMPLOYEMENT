@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import { Input, Button } from 'antd';
 import 'antd/dist/reset.css';
 import './OtpVerification.css';
-import { createUser, getUserById } from '../calls/userCalls';
+import { createUser, getUserByNumber } from '../calls/userCalls';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from './GlobalContext';
+
+
 
 function OtpVerification({ mobileNumber }) {
   const [otpValues, setOtpValues] = useState(Array(6).fill(''));
   const navigate = useNavigate();
+  const { userId, setUserId } = useAppContext();
 
   function handleOtpChange(e, index) {
     const value = e.target.value;
@@ -64,14 +68,15 @@ function OtpVerification({ mobileNumber }) {
 
       if (data.message === 'OTP verified successfully') {
         try {
-          const user = await getUserById(mobileNumber); // Assuming mobileNumber is used as the user ID
+          const user = await getUserByNumber(mobileNumber); 
           if (user) {
-            navigate('/login');
+            setUserId(user._id);
+            navigate('/RoleSelection');
           } else {
-            // User does not exist, create new user
             await createUser({ mobileNumber: mobileNumber });
-            // Navigate to a different page after creating the user
-            navigate('/welcome'); // Replace '/welcome' with your desired route
+            const newUser = await getUserByNumber(mobileNumber);
+            setUserId(newUser._id);
+            navigate('/RoleSelection'); 
           }
         } catch (err) {
           console.error(err);
