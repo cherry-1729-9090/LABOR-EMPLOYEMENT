@@ -12,17 +12,15 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      userId,
-      setUserId,
-      selectedRole,
+      userId, // user for everything
+      setUserId, 
+      selectedRole, // changes the roles from RoleSelection page
       setSelectedRole,
-      selectedEquipmentId,
-      setSelectedEquipmentId,
-      machineCategory,
+      machineCategory, // changes the machine category from MachinesForRent page
       setMachineCategory,
-      machineId,
+      machineId, // changes the machine details from MachinesForRent page
       setMachineId,
-      MachineOwnerId,
+      MachineOwnerId, // changes the machine owner details from MachinesForRent page
       setMachineOwnerId
     }}>
       {children}
