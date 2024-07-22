@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Select, Button, Typography } from 'antd';
-
+import { createJob } from '../../calls/jobCalls';
 const { Title } = Typography;
 const { Option } = Select;
 
-const AddProjectStep1 = ({ setRole }) => {
+const AddProjectStep1 = () => {
   const [role, updateRole] = useState('');
   const navigate = useNavigate();
 
@@ -15,7 +15,7 @@ const AddProjectStep1 = ({ setRole }) => {
 
   const handleProceed = () => {
     if (role) {
-      setRole(role);
+      const Job = 
       navigate('/add-project-step2');
     }
   };

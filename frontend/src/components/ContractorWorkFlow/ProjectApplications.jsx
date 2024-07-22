@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Card, List, Button, Typography, Alert } from 'antd';
+
+const { Title, Text } = Typography;
 
 const ProjectApplications = ({ applications = [] }) => {
   const [currentApplications, setCurrentApplications] = useState(applications);
@@ -16,31 +19,38 @@ const ProjectApplications = ({ applications = [] }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">Number of People Applied</h2>
+      <Card className="w-full max-w-2xl">
+        <Title level={3} className="text-center">Number of People Applied</Title>
         <div className="space-y-4">
           {currentApplications.length > 0 ? (
-            currentApplications.map((application, index) => (
-              <div 
-                key={index} 
-                className="p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition duration-300"
-                onClick={() => navigate(`/employee-details/${index}`)}
-              >
-                <div className="font-medium text-gray-700">Employee {application.name}</div>
-                <div className="text-gray-600">Ratings: {application.rating}</div>
-              </div>
-            ))
+            <List
+              itemLayout="vertical"
+              dataSource={currentApplications}
+              renderItem={(application, index) => (
+                <List.Item
+                  key={index}
+                  onClick={() => navigate(`/employee-details/${index}`)}
+                  className="cursor-pointer hover:bg-gray-50 transition duration-300"
+                >
+                  <List.Item.Meta
+                    title={<Text strong>Employee {application.name}</Text>}
+                    description={<Text>Ratings: {application.rating}</Text>}
+                  />
+                </List.Item>
+              )}
+            />
           ) : (
-            <div>No applications available</div>
+            <Alert message="No applications available" type="info" showIcon />
           )}
         </div>
-        <button 
-          className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+        <Button 
+          type="primary" 
+          className="mt-6 w-full"
           onClick={() => alert('Project Started')}
         >
           Start the Project
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   );
 };

@@ -50,3 +50,14 @@ exports.deleteJob = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.getJobByPostedById = async (req, res) => {
+    try {
+        const jobs = await Job.find({ postedBy: req.params.id }).populate('postedBy');
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+

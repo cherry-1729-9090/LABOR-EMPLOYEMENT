@@ -27,8 +27,9 @@ const purchaseTransactionRoutes = require('./routes/purchaseTransactionRoutes');
 const skillsRoutes = require('./routes/skillsRoutes');
 const workHistoryRoutes = require('./routes/workHistoryRoutes');
 const ratingsRoutes = require('./routes/ratingsRoutes');
-
+const authRoutes = require('./routes/authRoutes');
 // Using routes
+app.use('api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/labourworkers', labourWorkerRoutes);
 app.use('/api/contractors', contractorRoutes);

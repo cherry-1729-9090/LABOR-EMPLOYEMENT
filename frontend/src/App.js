@@ -44,6 +44,7 @@ import MachineDetails from './components/MachinesWorkflow/RenteeWorkflow/Machine
 import OwnerRentalInfo from './components/MachinesWorkflow/RenteeWorkflow/OwnerRentalInfo';
 import RenteeDetails from './components/MachinesWorkflow/RenteeWorkflow/RenteeDetails';
 import RenteeMachines from './components/MachinesWorkflow/RenteeWorkflow/RenteeMachines';
+import LoginPage from './components/Loginpage';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
         <AppProvider>
           <Routes>
             {/* Role Selection and User Details */}
+            <Route path="/" element={<LoginPage />} />
             <Route path="/role-selection" element={<RoleSelection />} />
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/user-details" element={<UserDetails />} />

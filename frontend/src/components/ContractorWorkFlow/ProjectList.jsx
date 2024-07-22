@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 import { Button, Card, List, Typography, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { getJobsByPostedById } from '../../calls/jobCalls';
+import { useAppContext } from '../GlobalContext';
 
 const { Title, Text } = Typography;
 
-const ProjectList = ({ projects = [], updateProjectStatus }) => {
+const ProjectList = () => {
+  const {userId} = useAppContext();
+  const [projects, setProjects] = useState([]);
+  useEffect(() => {
+    try {
+      projects = getJobsByPostedById(userId);
+    }
+    catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  }, []);
+
   const navigate = useNavigate();
 
   const handleStatusToggle = (index) => {
@@ -20,7 +33,7 @@ const ProjectList = ({ projects = [], updateProjectStatus }) => {
       content: confirmMessage,
       onOk: () => {
         updatedProjects[index].status = projectStatus === 'In progress' ? 'Completed' : 'In progress';
-        updateProjectStatus(updatedProjects);
+        // updateProjectStatus(updatedProjects);
       },
     });
   };
@@ -29,6 +42,10 @@ const ProjectList = ({ projects = [], updateProjectStatus }) => {
     if (projects[index].status === 'In progress') {
       navigate(`/project-details/${index}`);
     }
+  };
+
+  const handleAddProject = () => {
+    navigate('/contractor/add-project-step2');
   };
 
   return (
@@ -83,7 +100,7 @@ const ProjectList = ({ projects = [], updateProjectStatus }) => {
         <Button
           type="primary"
           style={{ width: '100%' }}
-          onClick={() => navigate('/contractor/add-project-step1')}
+          onClick={handleAddProject}
         >
           Add Project
         </Button>
