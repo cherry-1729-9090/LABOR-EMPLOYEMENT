@@ -93,6 +93,7 @@ function App() {
                 <Route path="machines-rented" element={<MachinesRented />} />
                 <Route path="vendor-details" element={<VendorDetails />} />
               </Route>
+
               {/* Rentee */}
               <Route path="rentee">
                 <Route path="add-machine" element={<AddMachine />} />
@@ -102,6 +103,8 @@ function App() {
                 <Route path="rentee-details" element={<RenteeDetails />} />
                 <Route path="rentee-machines" element={<RenteeMachines />} />
               </Route>
+
+              
             </Route>
           </Routes>
         </AppProvider>
