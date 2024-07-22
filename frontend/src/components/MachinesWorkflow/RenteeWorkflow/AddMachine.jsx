@@ -1,111 +1,103 @@
 import React, { useState } from 'react';
+import { Form, Input, Select, Button, Upload, Typography } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import './AddMachine.css';
 
-function AddMachine() {
-    const [formData, setFormData] = useState({
-        machineName: '',
-        category: '',
-        modelMake: '',
-        yearOfPurchase: '',
-        specifications: '',
-        condition: '',
-        attachments: '',
-        machinePhoto: null
-    });
+const { Title } = Typography;
+const { Option } = Select;
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'machinePhoto') {
-            setFormData((prevState) => ({
-                ...prevState,
-                [name]: files[0]
-            }));
-        } else {
-            setFormData((prevState) => ({
-                ...prevState,
-                [name]: value
-            }));
-        }
+function AddMachine() {
+    const [form] = Form.useForm();
+    const [machinePhoto, setMachinePhoto] = useState(null);
+    const navigate = useNavigate();
+
+    const handlePhotoChange = ({ file }) => {
+        setMachinePhoto(file);
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Process the form data here
-        console.log('Form Data:', formData);
+    const handleSubmit = (values) => {
+        const machine = values;
+        navigate('/machines/rentee/owner-rental-info', { state: { machine, machinePhoto } });
     };
 
     return (
         <div className='AddMachine'>
-            <h1>Enter Machine Details</h1>
-            <form onSubmit={handleSubmit}>
-                <section className='macAddDet'>
-                    <input
-                        name='machineName'
-                        placeholder='Machine Name'
-                        value={formData.machineName}
-                        onChange={handleChange}
-                        className='machCat'
-                    />
-                    <select
-                        name='category'
-                        value={formData.category}
-                        onChange={handleChange}
-                        className='machCat'
+            <Title level={2}>Enter Machine Details</Title>
+            <Form form={form} layout='vertical' onFinish={handleSubmit}>
+                <Form.Item
+                    name='machineName'
+                    label='Machine Name'
+                    rules={[{ required: true, message: 'Please enter the machine name' }]}
+                >
+                    <Input placeholder='Machine Name' />
+                </Form.Item>
+                <Form.Item
+                    name='category'
+                    label='Category'
+                    rules={[{ required: true, message: 'Please select a category' }]}
+                >
+                    <Select placeholder='Category'>
+                        <Option value='Sowing and Planting'>Sowing and Planting</Option>
+                        <Option value='Harvesting'>Harvesting</Option>
+                        <Option value='Ploughs'>Ploughs</Option>
+                        <Option value='Tractors'>Tractors</Option>
+                        <Option value='Tractor Blades'>Tractor Blades</Option>
+                        <Option value='Other'>Other</Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    name='modelMake'
+                    label='Model and Make'
+                    rules={[{ required: true, message: 'Please enter the model and make' }]}
+                >
+                    <Input placeholder='Model and Make' />
+                </Form.Item>
+                <Form.Item
+                    name='yearOfPurchase'
+                    label='Year of Purchase'
+                    rules={[{ required: true, message: 'Please enter the year of purchase' }]}
+                >
+                    <Input placeholder='Year of Purchase' />
+                </Form.Item>
+                <Form.Item
+                    name='specifications'
+                    label='Specifications'
+                >
+                    <Input placeholder='Specifications (if any)' />
+                </Form.Item>
+                <Form.Item
+                    name='condition'
+                    label='Condition'
+                    rules={[{ required: true, message: 'Please enter the condition' }]}
+                >
+                    <Input placeholder='Condition' />
+                </Form.Item>
+                <Form.Item
+                    name='attachments'
+                    label='Attachments/Accessories'
+                >
+                    <Input placeholder='Attachments/Accessories (if needed)' />
+                </Form.Item>
+                <Form.Item
+                    name='machinePhoto'
+                    label='Machine Photo'
+                >
+                    <Upload
+                        listType='picture'
+                        beforeUpload={() => false}
+                        onChange={handlePhotoChange}
                     >
-                        <option value=''>Category</option>
-                        <option value='Sowing and Planting'>Sowing and Planting</option>
-                        <option value='Harvesting'>Harvesting</option>
-                        <option value='Ploughs'>Ploughs</option>
-                        <option value='Tractors'>Tractors</option>
-                        <option value='Tractor Blades'>Tractor Blades</option>
-                        <option value='Other'>Other</option>
-                    </select>
-                    <input
-                        name='modelMake'
-                        placeholder='Model and Make'
-                        value={formData.modelMake}
-                        onChange={handleChange}
-                        className='machCat'
-                    />
-                    <input
-                        name='yearOfPurchase'
-                        placeholder='Year of Purchase'
-                        value={formData.yearOfPurchase}
-                        onChange={handleChange}
-                        className='machCat'
-                    />
-                    <input
-                        name='specifications'
-                        placeholder='Specifications (if any)'
-                        value={formData.specifications}
-                        onChange={handleChange}
-                        className='machCat'
-                    />
-                    <input
-                        name='condition'
-                        placeholder='Condition'
-                        value={formData.condition}
-                        onChange={handleChange}
-                        className='machCat'
-                    />
-                    <input
-                        name='attachments'
-                        placeholder='Attachments/Accessories (if needed)'
-                        value={formData.attachments}
-                        onChange={handleChange}
-                        className='machCat'
-                    />
-                </section>
-                <div className='machinePhoto'>
-                    <img src={formData.machinePhoto ? URL.createObjectURL(formData.machinePhoto) : '#'} alt='Machine' />
-                    <input
-                        type='file'
-                        name='machinePhoto'
-                        onChange={handleChange}
-                    />
-                </div>
-                <button type='submit'>Proceed</button>
-            </form>
+                        <Button icon={<UploadOutlined />}>Upload Machine Photo</Button>
+                    </Upload>
+                    {machinePhoto && <img src={URL.createObjectURL(machinePhoto)} alt='Machine' className='machinePhotoPreview' />}
+                </Form.Item>
+                <Form.Item>
+                    <Button type='primary' htmlType='submit'>
+                        Proceed
+                    </Button>
+                </Form.Item>
+            </Form>
         </div>
     );
 }

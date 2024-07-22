@@ -27,7 +27,7 @@ function MachineDetails() {
         try {
             await deleteEquipment(machineId);
             message.success('Machine removed successfully');
-            navigate('/rentee-machines');
+            navigate('/machines/rentee/rentee-machines');
         } catch (error) {
             message.error('Failed to remove machine');
         }
