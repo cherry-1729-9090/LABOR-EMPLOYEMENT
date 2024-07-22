@@ -1,50 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Carousel } from 'react-responsive-carousel';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { Carousel, Button, Typography, message } from 'antd';
 import './MachineDetails.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getEquipmentById, deleteEquipment } from '../../../calls/equipmentCalls';
 
+const { Title, Paragraph } = Typography;
 
-function MachineDetails({ machineId }) {
-    // const [machine, setMachine] = useState(null);
+function MachineDetails() {
+    const { machineId } = useParams();
+    const [machine, setMachine] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(``)
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Failed to fetch machine details');
-                }
-                return res.json();
-            })
-            .then(data => {
-                // setMachine(data);
-            })
-            .catch(error => {
-                console.error('Error fetching machine details:', error);
-            });
+        async function fetchMachineDetails() {
+            try {
+                const data = await getEquipmentById(machineId);
+                setMachine(data);
+            } catch (error) {
+                message.error('Failed to fetch machine details');
+            }
+        }
+        fetchMachineDetails();
     }, [machineId]);
 
-    const handleRemoveMachine = () => {
-        fetch(``, {
-            method: 'DELETE'
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Failed to remove machine');
-                }
-                // Handle successful removal, e.g., navigate back or show a success message
-            })
-            .catch(error => {
-                console.error('Error removing machine:', error);
-            });
+    const handleRemoveMachine = async () => {
+        try {
+            await deleteEquipment(machineId);
+            message.success('Machine removed successfully');
+            navigate('/rentee-machines');
+        } catch (error) {
+            message.error('Failed to remove machine');
+        }
     };
 
-    // if (!machine) {
-    //     return <p>Loading...</p>;
-    // }
+    if (!machine) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div className='MachineDetails'>
-            {/* <h1>{machine.name}</h1>
+            <Title>{machine.name}</Title>
             <section className='machineImages'>
                 <Carousel>
                     {machine.images.map((img, idx) => (
@@ -55,34 +50,26 @@ function MachineDetails({ machineId }) {
                 </Carousel>
             </section>
             <div className='nTimesRented'>
-                <p>Number of Times Rented: {machine.timesRented}</p>
+                <Paragraph>Number of Times Rented: </Paragraph> 
             </div>
             <div className='mRatings'>
-                <p>Machine Ratings: {machine.rating}</p>
+                <Paragraph>Machine Ratings: ⭐</Paragraph>
             </div>
-            <button onClick={handleRemoveMachine}>Remove Machine</button> */}
-
-
-            <h1>machine name</h1>
-            <section className='machineImages'>
-                {/* <Carousel>
-                    {machine.images.map((img, idx) => (
-                        <div key={idx}>
-                            <img src={img} alt={`Machine Image ${idx + 1}`} />
-                        </div>
-                    ))}
-                </Carousel> */}
-                <img src='https://via.placeholder.com/150' alt='Machine Image 1' />
-            </section>
-            <div className='nTimesRented'>
-                <p>Number of Times Rented: 0</p>
+            <div className='machineDetails'>
+                <Paragraph>Description: {machine.description}</Paragraph>
+                <Paragraph>Location: {machine.location}</Paragraph>
+                <Paragraph>Rental Price: {machine.rentalPrice}</Paragraph>
+                <Paragraph>Sale Price: {machine.salePrice}</Paragraph>
+                <Paragraph>Specifications: {machine.specifications}</Paragraph>
+                <Paragraph>Attachments: {machine.attachments}</Paragraph>
+                <Paragraph>Deposit Required: {machine.depositRequired}</Paragraph>
+                <Paragraph>Year of Manufacture: {machine.yearOfManufacture}</Paragraph>
+                <Paragraph>Model and Make: {machine.modelAndMake}</Paragraph>
+                <Paragraph>Category: {machine.category}</Paragraph>
             </div>
-            <div className='mRatings'>
-                <p>Machine Ratings: 0⭐</p>
-            </div>
-            <button onClick={handleRemoveMachine}>Remove Machine</button>
-
-
+            <Button type='primary' danger onClick={handleRemoveMachine}>
+                Remove Machine
+            </Button>
         </div>
     );
 }

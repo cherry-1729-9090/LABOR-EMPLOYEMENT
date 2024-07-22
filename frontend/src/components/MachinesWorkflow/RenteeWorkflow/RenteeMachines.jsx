@@ -1,146 +1,88 @@
 import React, { useEffect, useState } from 'react';
+import { List, Card, Button, Image, Typography, message } from 'antd';
 import './RenteeMachines.css';
+import { useAppContext } from '../../GlobalContext';
+import { useNavigate } from 'react-router-dom';
+import { getEquipmentByUserId, deleteEquipment } from '../../../calls/equipmentCalls';
+
+const { Title, Text } = Typography;
 
 function RenteeMachines() {
     const [machines, setMachines] = useState([]);
+    const { userId, setRenteeId, setMachineId } = useAppContext();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('api-endpoint')
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Unable to fetch machines from Server');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setMachines(data);
-            })
-            .catch((error) => {
-                console.error(error.message);
-            });
-    }, []);
+        async function fetchMachines() {
+            try {
+                setRenteeId(userId);
+                const machines = await getEquipmentByUserId(userId);
+                setMachines(machines);
+            } catch (err) {
+                message.error('Failed to fetch machines');
+            }
+        }
+        fetchMachines();
+    }, [userId, setRenteeId]);
 
-    const removeMachine = (index) => {
-        // Function to handle machine removal
-        const updatedMachines = machines.filter((_, i) => i !== index);
-        setMachines(updatedMachines);
+    const removeMachine = async (equipmentId, index) => {
+        try {
+            await deleteEquipment(equipmentId);
+            message.success('Machine removed successfully');
+            const updatedMachines = machines.filter((_, i) => i !== index);
+            setMachines(updatedMachines);
+        } catch (err) {
+            message.error('Failed to remove machine');
+        }
+    };
+
+    const handleCardClick = (machineId, machineStatus) => {
+        setMachineId(machineId);
+        if (machineStatus === 'inUsage') {
+            navigate(`/machines/rentee/current-rented-machines`);
+        } else {
+            navigate(`/machines/rentee/machine-details`);
+        }
     };
 
     return (
         <div className='RenteeMachines'>
-            <h1>Your Machines</h1>
-            
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-
-            <div className="machineItem">
-                <img src='#' className='machineImage' />
-                <div className='machineDet'>
-                    <h2 className='machineName'>Tractor</h2>
-                    <p className='machineStatus'>In Usage</p>
-                </div>
-                <div>
-                    <p className='machineRating'>Rating: 0⭐</p>
-                </div>
-            </div>
-
-
-
-            <section className="MachinesSection">
-                {machines.length > 0 ? (
-                    machines.map((machine, index) => (
-                        <div key={index} className="machineItem">
-                            <img src='#' className='machineImage' alt='Machine' />
-                            <div className='machineDet'>
-                                <h2 className='machineName'>{machine.name}</h2>
-                                {machine.status === 'inUsage' ? (
-                                    <p className='machineStatus'>In Usage</p>
-                                ) : (
-                                    <button onClick={() => removeMachine(index)}>Remove Machine</button>
-                                )}
-                            </div>
-                            <div className='machineRating'>
-                                <p>Rating: {machine.rating}⭐</p>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p>No machines available</p>
+            <Title level={1}>Your Machines</Title>
+            <List
+                grid={{ gutter: 16, column: 4 }}
+                dataSource={machines}
+                renderItem={(machine, index) => (
+                    <List.Item>
+                        <Card
+                            onClick={() => handleCardClick(machine.id, machine.status)}
+                            cover={<Image src='#' className='machineImage' alt='Machine' />}
+                        >
+                            <Card.Meta
+                                title={machine.name}
+                                description={
+                                    <>
+                                        <Text className='machineStatus'>{machine.status === 'inUsage' ? 'In Usage' : 'Available'}</Text>
+                                        <br />
+                                        <Text className='machineRating'>Rating: {machine.rating}⭐</Text>
+                                    </>
+                                }
+                            />
+                            {machine.status !== 'inUsage' && (
+                                <Button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeMachine(machine.id, index);
+                                    }}
+                                >
+                                    Remove Machine
+                                </Button>
+                            )}
+                        </Card>
+                    </List.Item>
                 )}
-            </section>
-            <button className='addMachine'>Add a Machine</button>
+            />
+
+            <Button type='primary' className='addMachine'>Add a Machine</Button>
         </div>
     );
 }

@@ -23,7 +23,7 @@ function MachinesRented() {
             }
         }
         fetchMachines();
-    }, [userId]);
+    }, []);
 
     function handleRentMachine() {
         navigate('/machines/borrower/machines-for-rent');
