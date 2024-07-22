@@ -1,22 +1,28 @@
 import React from 'react';
+import { Button, Card, List, Typography, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
+
+const { Title, Text } = Typography;
 
 const ProjectList = ({ projects = [], updateProjectStatus }) => {
   const navigate = useNavigate();
 
   const handleStatusToggle = (index) => {
     const updatedProjects = [...projects];
-    if (updatedProjects[index].status === 'In progress') {
-      if (window.confirm('Are you sure you want to mark this project as completed?')) {
-        updatedProjects[index].status = 'Completed';
+    const projectStatus = updatedProjects[index].status;
+
+    const confirmMessage = projectStatus === 'In progress'
+      ? 'Are you sure you want to mark this project as completed?'
+      : 'Are you sure you want to mark this project as in progress?';
+
+    Modal.confirm({
+      title: 'Confirm Action',
+      content: confirmMessage,
+      onOk: () => {
+        updatedProjects[index].status = projectStatus === 'In progress' ? 'Completed' : 'In progress';
         updateProjectStatus(updatedProjects);
-      }
-    } else if (updatedProjects[index].status === 'Completed') {
-      if (window.confirm('Are you sure you want to mark this project as in progress?')) {
-        updatedProjects[index].status = 'In progress';
-        updateProjectStatus(updatedProjects);
-      }
-    }
+      },
+    });
   };
 
   const handleProjectClick = (index) => {
@@ -26,44 +32,61 @@ const ProjectList = ({ projects = [], updateProjectStatus }) => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col">
-      <div className="flex-1 p-4 overflow-auto">
-        <h2 className="text-2xl font-bold text-center mb-4">Your Projects</h2>
-        <div className="space-y-4">
-          {projects.length > 0 ? (
-            projects.map((project, index) => (
-              <div key={index} className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm">
-                <div
-                  className="text-lg font-semibold cursor-pointer hover:text-blue-600"
-                  onClick={() => handleProjectClick(index)}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, padding: '16px', overflow: 'auto' }}>
+        <Title level={2} style={{ textAlign: 'center' }}>Your Projects</Title>
+        {projects.length > 0 ? (
+          <List
+            dataSource={projects}
+            renderItem={(project, index) => (
+              <List.Item
+                key={index}
+                actions={[
+                  <Button
+                    type={project.status === 'In progress' ? 'primary' : 'default'}
+                    onClick={() => handleStatusToggle(index)}
+                  >
+                    {project.status === 'In progress' ? 'Mark as Completed' : 'Mark as In Progress'}
+                  </Button>
+                ]}
+              >
+                <Card
+                  style={{ width: '100%' }}
+                  title={
+                    <a
+                      onClick={() => handleProjectClick(index)}
+                      style={{ cursor: 'pointer', color: '#1890ff' }}
+                    >
+                      {project.name}
+                    </a>
+                  }
                 >
-                  {project.name}
-                </div>
-                <div
-                  className={`text-sm py-1 px-3 rounded-full ${project.status === 'In progress' ? 'bg-yellow-300 text-yellow-800' : 'bg-green-300 text-green-800'}`}
-                >
-                  {project.status}
-                </div>
-                <button
-                  className={`py-2 px-4 rounded-lg shadow ${project.status === 'In progress' ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-green-500 text-white hover:bg-green-600'}`}
-                  onClick={() => handleStatusToggle(index)}
-                >
-                  {project.status === 'In progress' ? 'Mark as Completed' : 'Completed'}
-                </button>
-              </div>
-            ))
-          ) : (
-            <div className="text-center text-gray-500">No projects available</div>
-          )}
-        </div>
+                  <Text
+                    style={{
+                      backgroundColor: project.status === 'In progress' ? '#faad14' : '#52c41a',
+                      color: '#fff',
+                      padding: '4px 8px',
+                      borderRadius: '12px',
+                    }}
+                  >
+                    {project.status}
+                  </Text>
+                </Card>
+              </List.Item>
+            )}
+          />
+        ) : (
+          <div style={{ textAlign: 'center', color: '#999' }}>No projects available</div>
+        )}
       </div>
-      <div className="p-4 bg-white border-t border-gray-200">
-        <button
-          className="w-full bg-green-500 text-white py-3 rounded-lg shadow hover:bg-green-600"
-          onClick={() => navigate('/add-project-step1')}
+      <div style={{ padding: '16px', backgroundColor: '#fff', borderTop: '1px solid #e8e8e8' }}>
+        <Button
+          type="primary"
+          style={{ width: '100%' }}
+          onClick={() => navigate('/contractor/add-project-step1')}
         >
           Add Project
-        </button>
+        </Button>
       </div>
     </div>
   );

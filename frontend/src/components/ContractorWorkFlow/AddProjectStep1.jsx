@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Form, Select, Button, Typography } from 'antd';
+
+const { Title } = Typography;
+const { Option } = Select;
 
 const AddProjectStep1 = ({ setRole }) => {
   const [role, updateRole] = useState('');
   const navigate = useNavigate();
 
-  const handleRoleChange = (event) => {
-    updateRole(event.target.value);
+  const handleRoleChange = (value) => {
+    updateRole(value);
   };
 
   const handleProceed = () => {
@@ -17,32 +21,37 @@ const AddProjectStep1 = ({ setRole }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-700 to-gray-900 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Select Role</h2>
-        <label htmlFor="role-select" className="block text-lg font-medium text-gray-700 mb-4">Choose your role:</label>
-        <select 
-          id="role-select" 
-          value={role} 
-          onChange={handleRoleChange}
-          className="w-full h-16 p-4 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-gray-500"
-        >
-          <option value="">Select a role</option>
-          <option value="Construction contractor">Construction contractor</option>
-          <option value="Farmer">Farmer</option>
-          <option value="Live Stock owner">Live Stock owner</option>
-          <option value="Diary Farming">Diary Farming</option>
-          <option value="Aqua Culture">Aqua Culture</option>
-          <option value="Residential and Commercial">Residential and Commercial</option>
-          <option value="Manufacturing industry">Manufacturing industry</option>
-        </select>
-        <button 
-          className="w-full py-3 bg-blue-800 text-white rounded-lg shadow-md hover:bg-blue-900 disabled:bg-gray-300 disabled:cursor-not-allowed transition duration-300"
-          onClick={handleProceed} 
-          disabled={!role}
-        >
-          Proceed to Next
-        </button>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'linear-gradient(to right, #374151, #1f2937)', padding: '16px' }}>
+      <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', width: '100%', maxWidth: '400px' }}>
+        <Title level={2} style={{ textAlign: 'center', marginBottom: '24px' }}>Select Role</Title>
+        <Form layout="vertical">
+          <Form.Item label="Choose your role:" required>
+            <Select
+              value={role}
+              onChange={handleRoleChange}
+              placeholder="Select a role"
+              style={{ width: '100%', marginBottom: '24px' }}
+            >
+              <Option value="Construction contractor">Construction contractor</Option>
+              <Option value="Farmer">Farmer</Option>
+              <Option value="Live Stock owner">Live Stock owner</Option>
+              <Option value="Diary Farming">Diary Farming</Option>
+              <Option value="Aqua Culture">Aqua Culture</Option>
+              <Option value="Residential and Commercial">Residential and Commercial</Option>
+              <Option value="Manufacturing industry">Manufacturing industry</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              onClick={handleProceed}
+              disabled={!role}
+              style={{ width: '100%' }}
+            >
+              Proceed to Next
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </div>
   );

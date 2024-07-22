@@ -11,7 +11,8 @@ export const AppProvider = ({ children }) => {
   const [MachineOwnerId, setMachineOwnerId] = useState(null);
   const [BorrowerId, setBorrowerId] = useState(null);
   const [RenteeId, setRenteeId] = useState(null);
-
+  const [contractorId,setContractorId] = useState(null);
+  
   return (
     <AppContext.Provider value={{
       userId, // user for everything
@@ -28,6 +29,8 @@ export const AppProvider = ({ children }) => {
       setBorrowerId,
       RenteeId, // Used in the Rentee work flow to set it as the rentee
       setRenteeId,
+      contractorId, // Used in the Contractor work flow to set the contractor
+      setContractorId,
     }}>
       {children}
     </AppContext.Provider>
