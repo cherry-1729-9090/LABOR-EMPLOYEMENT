@@ -1,5 +1,4 @@
-import {axiosInstance} from './axiosInstance';
-
+import { axiosInstance } from './axiosInstance';
 
 const getUserById = async (id) => {
     try {
@@ -10,7 +9,6 @@ const getUserById = async (id) => {
     }
 }
 
-
 const getUserByNumber = async (mobileNumber) => {
     try {
         const response = await axiosInstance.get(`/users/getbynumber/${mobileNumber}`);
@@ -19,7 +17,6 @@ const getUserByNumber = async (mobileNumber) => {
         return error.response.data;
     }
 }
-
 
 const getAllUsers = async () => {
     try {
@@ -39,7 +36,6 @@ const updateUser = async (id, user) => {
     }
 }
 
-
 const createUser = async (user) => {
     try {
         const response = await axiosInstance.post('/users', user);
@@ -58,7 +54,4 @@ const deleteUser = async (id) => {
     }
 }
 
-
-
-export { getUserById, getAllUsers, updateUser, createUser, deleteUser,getUserByNumber };
-
+export { getUserById, getAllUsers, updateUser, createUser, deleteUser, getUserByNumber };

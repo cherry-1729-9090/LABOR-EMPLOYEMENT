@@ -1,4 +1,3 @@
-// controllers/UserController.js
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -12,8 +11,6 @@ exports.createUser = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
-
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -49,7 +46,6 @@ exports.getUserByNumber = async(req, res) => {
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-
 };
 
 exports.updateUser = async (req, res) => {

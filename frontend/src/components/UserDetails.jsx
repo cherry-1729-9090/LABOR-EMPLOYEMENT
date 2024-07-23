@@ -1,30 +1,13 @@
 import React from 'react';
 import { Form, Input, Button, Card } from 'antd';
-import { useAppContext } from './GlobalContext';
-import { createUser } from '../calls/userCalls';
 
-function UserDetails({ MobileNumber }) {
-  const { userId, setUserId } = useAppContext();
 
-  async function onFinish(values) {
-    console.log(values);
-    try {
-      const response = await createUser(values);
-      setUserId(response.id);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
+function UserDetails({MobileNumber}) {
   return (
-    <Card title="OTP Verification Mobile" style={{ width: '100vw', height: '100vh' }}>
-      <Form layout="vertical" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }} onFinish={onFinish}>
-        <Form.Item
-          name="details"
-          label="Enter the Details"
-          rules={[{ required: true, message: 'Please enter the details!' }]}
-        >
+    <Card title="otp verification mobile" style={{ width: '100vw',height:'100vh'}}>
+      <Form layout="vertical" style={{height:'100vh',display:'flex',flexDirection:'column'}}>
+        <Form.Item label="Enter the Details">
           <Input placeholder="Enter the Details" />
         </Form.Item>
         <Form.Item
@@ -41,11 +24,7 @@ function UserDetails({ MobileNumber }) {
         >
           <Input placeholder="Last Name" />
         </Form.Item>
-        <Form.Item
-          name="mobileNumber"
-          label="Mobile Number"
-          rules={[{ required: true, message: 'Please enter your mobile number!' }]}
-        >
+        <Form.Item label="Mobile Number">
           <Input placeholder="Mobile Number" />
         </Form.Item>
         <Form.Item

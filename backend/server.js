@@ -1,18 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 const cors = require('cors');
+
+
 // Load environment variables
 dotenv.config();
 
 const app = express();
 
 // Middleware to parse JSON bodies
-app.use(express.json()); // Use built-in Express middleware instead of body-parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
 app.use(cors());
 
 // Database connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected successfully.'))
   .catch(err => console.error('MongoDB connection error:', err));
 
@@ -27,7 +33,7 @@ const purchaseTransactionRoutes = require('./routes/purchaseTransactionRoutes');
 const skillsRoutes = require('./routes/skillsRoutes');
 const workHistoryRoutes = require('./routes/workHistoryRoutes');
 const ratingsRoutes = require('./routes/ratingsRoutes');
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutes'); // Assuming you have this route
 
 // Using routes
 app.use('/api/auth', authRoutes);
@@ -41,10 +47,6 @@ app.use('/api/purchasetransactions', purchaseTransactionRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/workhistories', workHistoryRoutes);
 app.use('/api/ratings', ratingsRoutes);
-app.post('/say', (req, res) => {
-  console.log(req.body.message);
-  res.status(200).json({ message: 'Message received successfully' }); // Use res.json() here
-});
 
 // Server setup
 const PORT = process.env.PORT || 3500;

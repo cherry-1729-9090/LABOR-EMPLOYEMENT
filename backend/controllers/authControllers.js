@@ -35,6 +35,7 @@ exports.sendOtp = async (req, res) => {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
 
+    // Check if Twilio credentials are available
     if (!servicesSid || !accountSid || !authToken) {
         console.error("Missing Twilio credentials in environment variables");
         return res.status(500).send({ message: "Server configuration error" });
@@ -43,8 +44,12 @@ exports.sendOtp = async (req, res) => {
     const client = twilio(accountSid, authToken);
 
     try {
+        // Ensure the mobile number is in the correct format
+        const formattedNumber = `+91${number}`;
+        console.log("Formatted mobile number:", formattedNumber);
+
         const verification = await client.verify.v2.services(servicesSid)
-            .verifications.create({ to: `+91${number}`, channel: 'sms' });
+            .verifications.create({ to: formattedNumber, channel: 'sms' });
         
         console.log("Verification SID:", verification.sid);
         res.status(200).send({ message: "OTP sent successfully" });

@@ -11,7 +11,7 @@ const AdditionalInfoPage = ({ onSave }) => {
   const navigate = useNavigate(); // Initialize useNavigate
   
   const handlePreviousWorkChange = (index, field, value) => {
-    const updatedWorks = [...previousWorks];
+    const updatedWorks = [ previousWorks];
     updatedWorks[index][field] = value;
     setPreviousWorks(updatedWorks);
   };

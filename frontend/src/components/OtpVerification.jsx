@@ -3,24 +3,22 @@ import { Input, Button } from 'antd';
 import 'antd/dist/reset.css';
 import './OtpVerification.css';
 import { createUser, getUserByNumber } from '../calls/userCalls';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppContext } from './GlobalContext';
 
-
-
-function OtpVerification({ mobileNumber }) {
+function OtpVerification() {
   const [otpValues, setOtpValues] = useState(Array(6).fill(''));
   const navigate = useNavigate();
-  const { userId, setUserId } = useAppContext();
+  const location = useLocation();
+  const { mobileNumber } = useAppContext();
+  const { setUserId } = useAppContext();
 
   function handleOtpChange(e, index) {
     const value = e.target.value;
-
     if (/^[0-9]$/.test(value) || value === '') {
       const newOtpValues = [...otpValues];
       newOtpValues[index] = value;
       setOtpValues(newOtpValues);
-
       if (value && index < otpValues.length - 1) {
         setTimeout(() => {
           document.querySelectorAll('.otpInp')[index + 1].focus();
@@ -51,11 +49,17 @@ function OtpVerification({ mobileNumber }) {
   async function handleSubmit() {
     const values = otpValues.join('');
     console.log(values);
-
+    
     try {
       const response = await fetch('http://localhost:3500/api/auth/verify-otp', {
-        mobileNumber: mobileNumber,
-        otpCode: values
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          mobileNumber: mobileNumber,
+          otpCode: values
+        })
       });
 
       if (!response.ok) {
@@ -63,8 +67,6 @@ function OtpVerification({ mobileNumber }) {
       }
 
       const data = await response.json();
-      console.log(data);
-
       if (data.message === 'OTP verified successfully') {
         try {
           const user = await getUserByNumber(mobileNumber);
@@ -75,7 +77,7 @@ function OtpVerification({ mobileNumber }) {
             await createUser({ mobileNumber: mobileNumber });
             const newUser = await getUserByNumber(mobileNumber);
             setUserId(newUser._id);
-            navigate('/user-details');
+            navigate('/user-details'); 
           }
         } catch (err) {
           console.error(err);
