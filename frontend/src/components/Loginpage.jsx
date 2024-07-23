@@ -1,39 +1,39 @@
 "use client";
 import axios from 'axios';
-import React from 'react';
+import React, { useState } from 'react';
 import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
 
-function LoginPage() {
-  const navigate = useNavigate();
-  const [mobileNumber, setMobileNumber] = React.useState('');
+function LoginPage({ mobileNumber, setMobileNumber }) {
 
   function handleSubmit() {
     console.log(mobileNumber);
-    axios.post('http://localhost:3500/api/auth/send-otp', {
-      mobileNumber: mobileNumber
-    })
-    .then((response) => {
-      console.log(response.data); // Access data directly from response
-      navigate('/otp-verification', { state: { mobileNumber: mobileNumber } });
-    })
-    .catch((error) => {
-      console.error('Error sending OTP:', error);
-    });
+    axios.post('http://localhost:3500/send-otp', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: {
+        mobileNumber: mobileNumber
+      }
+    }).then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
   }
 
-  function handleInputChange(event) {
+  const handleInputChange = (event) => {
     const value = event.target.value;
     if (/^\d*$/.test(value) && value.length <= 10) {
       setMobileNumber(value);
     }
-  }
+  };
 
   function handleKeyDown(event) {
+    // Allow only numeric keys, backspace, and delete
     if (!((event.key >= '0' && event.key <= '9') || event.key === 'Backspace' || event.key === 'Delete')) {
       event.preventDefault();
     }
-  }
+  };
 
   return (
     <div className='container'>

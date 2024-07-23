@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Skills = require('./Skills');
+
 const Schema = mongoose.Schema;
 
 // Enum for user types
