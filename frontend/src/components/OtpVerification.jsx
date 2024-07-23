@@ -51,41 +51,41 @@ function OtpVerification({ mobileNumber }) {
   async function handleSubmit() {
     const values = otpValues.join('');
     console.log(values);
-    
+
     try {
-      const response = await fetch('http://localhost:5000/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          mobileNumber: mobileNumber,
-          otpCode: values
-        })
+      const response = await fetch('http://localhost:3500/api/auth/verify-otp', {
+        mobileNumber: mobileNumber,
+        otpCode: values
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
       console.log(data);
 
       if (data.message === 'OTP verified successfully') {
         try {
-          const user = await getUserByNumber(mobileNumber); 
+          const user = await getUserByNumber(mobileNumber);
           if (user) {
             setUserId(user._id);
-            navigate('/role-selction');
+            navigate('/role-selection');
           } else {
             await createUser({ mobileNumber: mobileNumber });
             const newUser = await getUserByNumber(mobileNumber);
             setUserId(newUser._id);
-            navigate('/user-details'); 
+            navigate('/user-details');
           }
         } catch (err) {
           console.error(err);
         }
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error during OTP verification:', err);
     }
   }
+
 
   return (
     <div className='otpPage'>

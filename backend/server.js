@@ -1,15 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-
+const cors = require('cors');
 // Load environment variables
 dotenv.config();
 
 const app = express();
 
 // Middleware to parse JSON bodies
-app.use(bodyParser.json());
+app.use(express.json()); // Use built-in Express middleware instead of body-parser
+app.use(cors());
 
 // Database connection
 mongoose.connect(process.env.MONGO_URI)
@@ -28,8 +28,9 @@ const skillsRoutes = require('./routes/skillsRoutes');
 const workHistoryRoutes = require('./routes/workHistoryRoutes');
 const ratingsRoutes = require('./routes/ratingsRoutes');
 const authRoutes = require('./routes/authRoutes');
+
 // Using routes
-app.use('api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/labourworkers', labourWorkerRoutes);
 app.use('/api/contractors', contractorRoutes);
@@ -40,9 +41,14 @@ app.use('/api/purchasetransactions', purchaseTransactionRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/workhistories', workHistoryRoutes);
 app.use('/api/ratings', ratingsRoutes);
+app.post('/say', (req, res) => {
+  console.log(req.body.message);
+  res.status(200).json({ message: 'Message received successfully' }); // Use res.json() here
+});
 
 // Server setup
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3500;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
