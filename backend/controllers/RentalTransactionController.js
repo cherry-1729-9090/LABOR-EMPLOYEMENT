@@ -3,7 +3,7 @@ const RentalTransaction = require('../models/RentalTransaction')
 exports.createRentalTransaction = async (req, res) => {
     try {
         const newTransaction = new RentalTransaction({
-            equipmentId: req.body.equipmentId,
+            equipmentId: req.body.equipment,
             renterId: req.body.renterId,
             rentalStartDate: req.body.rentalStartDate,
             rentalEndDate: req.body.rentalEndDate,
@@ -20,8 +20,8 @@ exports.createRentalTransaction = async (req, res) => {
 exports.getAllRentalTransactions = async (req, res) => {
     try {
         const transactions = await RentalTransaction.find()
-                                                   .populate('equipmentId')
-                                                   .populate('renterId');
+            .populate('equipmentId')
+            .populate('renterId');
         res.json(transactions);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -31,8 +31,8 @@ exports.getAllRentalTransactions = async (req, res) => {
 exports.getRentalTransactionById = async (req, res) => {
     try {
         const transaction = await RentalTransaction.findById(req.params.id)
-                                                   .populate('equipmentId')
-                                                   .populate('renterId');
+            .populate('equipmentId')
+            .populate('renterId');
         if (transaction) {
             res.json(transaction);
         } else {

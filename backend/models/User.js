@@ -1,5 +1,3 @@
-// models/User.js
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -7,7 +5,7 @@ const Schema = mongoose.Schema;
 const userTypes = {
   LABOR_WORKER: "labor_worker",
   CONTRACTOR: "contractor",
-  GENERAL : "general"
+  GENERAL: "general"
 };
 
 const userSchema = new Schema({
@@ -15,7 +13,8 @@ const userSchema = new Schema({
   lastName: { type: String, required: true },
   phone: { type: String, required: true },
   userType: { type: String, required: true, enum: Object.values(userTypes) },
-  location: { type: String, required: true }
+  location: { type: String, required: true },
+  token: { type: String },
 });
 
 const User = mongoose.model('User', userSchema);
