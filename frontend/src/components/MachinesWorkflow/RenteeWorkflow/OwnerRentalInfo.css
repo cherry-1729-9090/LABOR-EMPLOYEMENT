@@ -1,0 +1,41 @@
+.OwnerRentalinfo{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+h1{
+    font-size: 25px;
+    padding: 5px;
+}
+
+.ownerInfo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+
+.ownerDet{
+    width: 80vw;
+    height: 5vh;
+    font-size: 20px;
+}
+
+.ownerInfo,
+.rentalInfo{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 100vw;
+    height: 35vh;
+}
+
+button{
+    margin-top: 15px;
+}
