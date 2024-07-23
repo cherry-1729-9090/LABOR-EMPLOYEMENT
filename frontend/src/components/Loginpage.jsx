@@ -1,35 +1,48 @@
 "use client";
-import axios from 'axios';
 import React, { useState } from 'react';
+import axios from 'axios';
 import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from './GlobalContext';
 
-function LoginPage({ mobileNumber, setMobileNumber }) {
+const LoginPage = () => {
+  const navigate = useNavigate();
+  const { setMobileNumber } = useAppContext();
+  const [localMobileNumber, setLocalMobileNumber] = useState('');
 
-  function handleSubmit() {
-    console.log(mobileNumber);
-    axios.post('http://localhost:3500/send-otp', {
+  const handleSubmit = () => {
+    console.log(localMobileNumber);
+    setMobileNumber(localMobileNumber);
+    axios.post('http://localhost:3500/api/auth/send-otp', { mobileNumber: localMobileNumber }, {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: {
-        mobileNumber: mobileNumber
+    })
+    .then((response) => {
+      console.log(response.data);
+      // Navigate to OTP Verification page upon successful OTP request
+      navigate('/otp-verification');
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.error('Response error:', error.response.data);
+      } else if (error.request) {
+        console.error('Request error:', error.request);
+      } else {
+        console.error('Axios error:', error.message);
       }
-    }).then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
-  }
+    });
+  };
 
   const handleInputChange = (event) => {
     const value = event.target.value;
     if (/^\d*$/.test(value) && value.length <= 10) {
-      setMobileNumber(value);
+      setLocalMobileNumber(value);
+      setMobileNumber(value); // Set the mobile number in the global context
     }
   };
 
-  function handleKeyDown(event) {
-    // Allow only numeric keys, backspace, and delete
+  const handleKeyDown = (event) => {
     if (!((event.key >= '0' && event.key <= '9') || event.key === 'Backspace' || event.key === 'Delete')) {
       event.preventDefault();
     }
@@ -45,7 +58,7 @@ function LoginPage({ mobileNumber, setMobileNumber }) {
             type='text'
             className='mobileinp'
             placeholder='Enter mobile number'
-            value={mobileNumber}
+            value={localMobileNumber}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
           />
@@ -60,6 +73,6 @@ function LoginPage({ mobileNumber, setMobileNumber }) {
       </div>
     </div>
   );
-}
+};
 
 export default LoginPage;

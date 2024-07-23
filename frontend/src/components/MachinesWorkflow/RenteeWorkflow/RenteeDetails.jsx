@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './RenteeDetails.css';
 
-const API_URL = 'http://localhost:5000/rentee/';
+const API_URL = 'http://localhost:3500/rentee/';
 
 function RenteeDetails({ renteeId }) {
     const [renteeDetails, setRenteeDetails] = useState(null);

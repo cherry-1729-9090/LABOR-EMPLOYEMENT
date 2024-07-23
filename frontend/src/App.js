@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ConfigProvider } from 'antd';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AppProvider } from './components/GlobalContext';
+import LoginPage from './components/Loginpage';
 import RoleSelection from './components/RoleSelection';
 import OtpVerification from './components/OtpVerification';
 import UserDetails from './components/UserDetails';
 import MachinesForRent from './components/MachinesWorkflow/BorrowerWorkFlow/MachinesForRent';
-import { AppProvider } from './components/GlobalContext';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Contractor Workflow
 import AddProjectStep1 from './components/ContractorWorkFlow/AddProjectStep1';
@@ -44,70 +45,58 @@ import MachineDetails from './components/MachinesWorkflow/RenteeWorkflow/Machine
 import OwnerRentalInfo from './components/MachinesWorkflow/RenteeWorkflow/OwnerRentalInfo';
 import RenteeDetails from './components/MachinesWorkflow/RenteeWorkflow/RenteeDetails';
 import RenteeMachines from './components/MachinesWorkflow/RenteeWorkflow/RenteeMachines';
-import LoginPage from './components/Loginpage';
 
 function App() {
+  const [mobileNumber, setMobileNumber] = useState('');
+
   return (
     <Router>
       <ConfigProvider>
         <AppProvider>
           <Routes>
             {/* Role Selection and User Details */}
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<LoginPage mobileNumber={mobileNumber} setMobileNumber={setMobileNumber} />} />
             <Route path="/role-selection" element={<RoleSelection />} />
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/user-details" element={<UserDetails />} />
 
             {/* Contractor Workflow */}
-            <Route path="/contractor">
-              <Route path="add-project-step1" element={<AddProjectStep1 />} />
-              <Route path="add-project-step2" element={<AddProjectStep2 />} />
-              <Route path="add-project-step3" element={<AddProjectStep3 />} />
-              <Route path="employee-details" element={<EmployeeDetails />} />
-              <Route path="project-applications" element={<ProjectApplications />} />
-              <Route path="project-details" element={<ProjectDetails />} />
-              <Route path="project-list" element={<ProjectList />} />
-            </Route>
+            <Route path="/contractor/add-project-step1" element={<AddProjectStep1 />} />
+            <Route path="/contractor/add-project-step2" element={<AddProjectStep2 />} />
+            <Route path="/contractor/add-project-step3" element={<AddProjectStep3 />} />
+            <Route path="/contractor/employee-details" element={<EmployeeDetails />} />
+            <Route path="/contractor/project-applications" element={<ProjectApplications />} />
+            <Route path="/contractor/project-details" element={<ProjectDetails />} />
+            <Route path="/contractor/project-list" element={<ProjectList />} />
 
             {/* Labor Workflow */}
-            <Route path="/labor">
-              <Route path="additional-info" element={<AdditionalInfoPage />} />
-              <Route path="applied" element={<AppliedPage />} />
-              <Route path="completed" element={<CompletedPage />} />
-              <Route path="contract" element={<ContractPage />} />
-              <Route path="employee" element={<EmployeePage />} />
-              <Route path="home" element={<HomePage />} />
-              <Route path="main" element={<MainPage />} />
-              <Route path="ongoing" element={<OngoingPage />} />
-              <Route path="work-information" element={<WorkInformationPage />} />
-              <Route path="work-selection" element={<WorkSelectionPage />} />
-              <Route path="work-status" element={<WorkStatusPage />} />
-            </Route>
+            <Route path="/labor/additional-info" element={<AdditionalInfoPage />} />
+            <Route path="/labor/applied" element={<AppliedPage />} />
+            <Route path="/labor/completed" element={<CompletedPage />} />
+            <Route path="/labor/contract" element={<ContractPage />} />
+            <Route path="/labor/employee" element={<EmployeePage />} />
+            <Route path="/labor/home" element={<HomePage />} />
+            <Route path="/labor/main" element={<MainPage />} />
+            <Route path="/labor/ongoing" element={<OngoingPage />} />
+            <Route path="/labor/work-information" element={<WorkInformationPage />} />
+            <Route path="/labor/work-selection" element={<WorkSelectionPage />} />
+            <Route path="/labor/work-status" element={<WorkStatusPage />} />
 
             {/* Machines Workflow */}
-            <Route path="/machines">
-              {/* Borrower */}
-              <Route path="borrower">
-                <Route path="machines-for-rent" element={<MachinesForRent />} />
-                <Route path="brw-machine-details" element={<BrwMachineDetails />} />
-                <Route path="brw-owner-details" element={<BrwOwnerDetails />} />
-                <Route path="machines-available" element={<MachinesAvailable />} />
-                <Route path="machines-rented" element={<MachinesRented />} />
-                <Route path="vendor-details" element={<VendorDetails />} />
-              </Route>
+            <Route path="/machines/borrower/machines-for-rent" element={<MachinesForRent />} />
+            <Route path="/machines/borrower/brw-machine-details" element={<BrwMachineDetails />} />
+            <Route path="/machines/borrower/brw-owner-details" element={<BrwOwnerDetails />} />
+            <Route path="/machines/borrower/machines-available" element={<MachinesAvailable />} />
+            <Route path="/machines/borrower/machines-rented" element={<MachinesRented />} />
+            <Route path="/machines/borrower/vendor-details" element={<VendorDetails />} />
 
-              {/* Rentee */}
-              <Route path="rentee">
-                <Route path="add-machine" element={<AddMachine />} />
-                <Route path="current-rented-machines" element={<CurrentRentedMachines />} />
-                <Route path="machine-details" element={<MachineDetails />} />
-                <Route path="owner-rental-info" element={<OwnerRentalInfo />} />
-                <Route path="rentee-details" element={<RenteeDetails />} />
-                <Route path="rentee-machines" element={<RenteeMachines />} />
-              </Route>
-
-              
-            </Route>
+            {/* Rentee Workflow */}
+            <Route path="/machines/rentee/add-machine" element={<AddMachine />} />
+            <Route path="/machines/rentee/current-rented-machines" element={<CurrentRentedMachines />} />
+            <Route path="/machines/rentee/machine-details" element={<MachineDetails />} />
+            <Route path="/machines/rentee/owner-rental-info" element={<OwnerRentalInfo />} />
+            <Route path="/machines/rentee/rentee-details" element={<RenteeDetails />} />
+            <Route path="/machines/rentee/rentee-machines" element={<RenteeMachines />} />
           </Routes>
         </AppProvider>
       </ConfigProvider>

@@ -10,7 +10,7 @@ function OtpVerification() {
   const [otpValues, setOtpValues] = useState(Array(6).fill(''));
   const navigate = useNavigate();
   const location = useLocation();
-  const { mobileNumber } = location.state;
+  const { mobileNumber } = useAppContext();
   const { setUserId } = useAppContext();
 
   function handleOtpChange(e, index) {
@@ -51,7 +51,7 @@ function OtpVerification() {
     console.log(values);
     
     try {
-      const response = await fetch('http://localhost:5000/verify-otp', {
+      const response = await fetch('http://localhost:3500/api/auth/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -77,7 +77,7 @@ function OtpVerification() {
             await createUser({ mobileNumber: mobileNumber });
             const newUser = await getUserByNumber(mobileNumber);
             setUserId(newUser._id);
-            navigate('/RoleSelection'); 
+            navigate('/user-details'); 
           }
         } catch (err) {
           console.error(err);

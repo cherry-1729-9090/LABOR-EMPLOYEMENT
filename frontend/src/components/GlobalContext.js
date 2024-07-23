@@ -12,7 +12,9 @@ export const AppProvider = ({ children }) => {
   const [BorrowerId, setBorrowerId] = useState(null);
   const [RenteeId, setRenteeId] = useState(null);
   const [contractorId,setContractorId] = useState(null);
-  
+  const [mobileNumber,setMobileNumber] = useState(null);
+
+
   return (
     <AppContext.Provider value={{
       userId, // user for everything
@@ -31,6 +33,8 @@ export const AppProvider = ({ children }) => {
       setRenteeId,
       contractorId, // Used in the Contractor work flow to set the contractor
       setContractorId,
+      mobileNumber, // Used in the LoginPage to set the mobile number
+      setMobileNumber,
     }}>
       {children}
     </AppContext.Provider>

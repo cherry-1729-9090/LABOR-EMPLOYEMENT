@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
 
 // Load environment variables
 dotenv.config();
@@ -9,9 +12,13 @@ const app = express();
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+app.use(cors());
 
 // Database connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected successfully.'))
   .catch(err => console.error('MongoDB connection error:', err));
 
@@ -26,6 +33,7 @@ const purchaseTransactionRoutes = require('./routes/purchaseTransactionRoutes');
 const skillsRoutes = require('./routes/skillsRoutes');
 const workHistoryRoutes = require('./routes/workHistoryRoutes');
 const ratingsRoutes = require('./routes/ratingsRoutes');
+const authRoutes = require('./routes/authRoutes'); // Assuming you have this route
 
 // Using routes
 app.use('/api/auth', authRoutes);
