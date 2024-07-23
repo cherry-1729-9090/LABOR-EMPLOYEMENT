@@ -5,14 +5,14 @@ dotenv.config(); // Load environment variables from .env file
 exports.sendOtp = async (req, res) => {
     const number = req.body.mobileNumber;
     console.log(req.body);
-    // console.log("number : ",number);
-    // console.log("reached through app here");
+    console.log("number : ",number);
+    console.log("reached through app here");
 
     const servicesSid = process.env.TWILIO_VERIFY_SERVICE_SID;
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const client = twilio(accountSid, authToken);
- 
+
     client.verify.v2.services(servicesSid)
         .verifications.create({ to: `+91${number}`, channel: 'sms' })
         .then(verification => {
