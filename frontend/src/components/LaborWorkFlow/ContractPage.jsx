@@ -1,82 +1,57 @@
-import React, { useState } from 'react';
-import { Button, Checkbox, Input, message } from 'antd';
+// src/pages/WorkerContractPage.js
+import React, { useState, useEffect } from 'react';
+import { Button, Card, Form, Checkbox, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const ContractPage = () => {
-  const [userAgreed, setUserAgreed] = useState(false);
-  const [contractorAgreed, setContractorAgreed] = useState(false);
-  const [userInfo, setUserInfo] = useState({
-    name: '',
-    contact: '',
-    position: '',
-  });
+const WorkerContractPage = ({ jobId }) => {
+  const [jobDetails, setJobDetails] = useState({});
+  const [contractorDetails, setContractorDetails] = useState({});
+  const [agreed, setAgreed] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Fetch job and contractor details
+    axios.get(`/api/jobs/${jobId}`).then(response => {
+      setJobDetails(response.data.job);
+      setContractorDetails(response.data.contractor);
+    }).catch(error => {
+      message.error('Failed to fetch job details.');
+    });
+  }, [jobId]);
+
   const handleSubmit = () => {
-    if (userAgreed && contractorAgreed) {
-      // Logic to update job status (from applied to ongoing)
-      message.success('Contract agreed! Job is now in the ongoing section.');
-      // Navigate back to main page or specific page
-      navigate('/main-page');
-    } else {
-      message.error('Both parties must agree to the contract.');
+    if (!agreed) {
+      message.error('You must agree to the terms and conditions.');
+      return;
     }
+
+    // Submit agreement to backend
+    axios.post(`/api/jobs/${jobId}/apply`, { agreed }).then(() => {
+      message.success('Application submitted successfully.');
+      navigate('/main-page');
+    }).catch(error => {
+      message.error('Failed to submit application.');
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-8 font-sans">
-      <h1 className="text-2xl font-bold text-red-700 mb-8">Contract Agreement</h1>
-      
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-10 mb-6">
-        <h2 className="text-xl font-semibold mb-4">User Information</h2>
-        <Input 
-          placeholder="Name" 
-          value={userInfo.name} 
-          onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })} 
-          className="mb-4" 
-        />
-        <Input 
-          placeholder="Contact Number" 
-          value={userInfo.contact} 
-          onChange={(e) => setUserInfo({ ...userInfo, contact: e.target.value })} 
-          className="mb-4" 
-        />
-        <Input 
-          placeholder="Position" 
-          value={userInfo.position} 
-          onChange={(e) => setUserInfo({ ...userInfo, position: e.target.value })} 
-          className="mb-4" 
-        />
-      </div>
-
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-10 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Contract Guidelines</h2>
-        <p>Please agree to the following terms:</p>
-        <Checkbox 
-          checked={userAgreed} 
-          onChange={(e) => setUserAgreed(e.target.checked)} 
-          className="mb-4"
-        >
-          I agree to the terms and conditions
-        </Checkbox>
-        
-        <Checkbox 
-          checked={contractorAgreed} 
-          onChange={(e) => setContractorAgreed(e.target.checked)} 
-          className="mb-4"
-        >
-          Contractor agrees to the terms and conditions
-        </Checkbox>
-      </div>
-
-      <Button 
-        onClick={handleSubmit} 
-        className="bg-red-600 hover:bg-red-700 text-white text-lg font-semibold"
-      >
-        Submit Agreement
-      </Button>
-    </div>
+    <Card title="Contract Page" className="p-4">
+      <h2>Job Details</h2>
+      <p>{jobDetails.description}</p>
+      <h2>Contractor Details</h2>
+      <p>{contractorDetails.name}</p>
+      <p>{contractorDetails.contact}</p>
+      <Form>
+        <Form.Item>
+          <Checkbox onChange={(e) => setAgreed(e.target.checked)}>
+            I agree to the terms and conditions
+          </Checkbox>
+        </Form.Item>
+        <Button type="primary" onClick={handleSubmit}>Apply</Button>
+      </Form>
+    </Card>
   );
 };
 
-export default ContractPage;
+export default WorkerContractPage;

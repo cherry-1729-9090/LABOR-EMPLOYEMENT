@@ -2,13 +2,24 @@ import { axiosInstance } from "./axiosInstance";
 
 export const getJobs = async () => {
     try {
-        const response = await axiosInstance.get('/jobs');
+        const response = await axiosInstance.get('/jobs/getAllJobs');
         return response.data;
     } catch (error) {
         console.error('Error fetching jobs:', error);
         return [];
     }
 }
+
+export const getJobById = async (jobId) => {
+    try {
+        const response = await axiosInstance.get(`/jobs/${jobId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching job by id:', error);
+        return null;
+    }
+}
+
 
 export const getJobsByPostedById = async (postedById) => {
     try {

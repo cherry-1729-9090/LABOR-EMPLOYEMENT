@@ -11,7 +11,7 @@ const AdditionalInfoPage = ({ onSave }) => {
   const navigate = useNavigate(); // Initialize useNavigate
   
   const handlePreviousWorkChange = (index, field, value) => {
-    const updatedWorks = [ previousWorks];
+    const updatedWorks = [...previousWorks];
     updatedWorks[index][field] = value;
     setPreviousWorks(updatedWorks);
   };
@@ -54,7 +54,7 @@ const AdditionalInfoPage = ({ onSave }) => {
       message.success("Information saved successfully!");
 
       // Navigate to Main Page after saving
-      navigate('/main-page'); 
+      navigate('/labor/main-page'); 
     } catch (error) {
       message.error("Failed to save information: " + error.message); // Display specific error
     }

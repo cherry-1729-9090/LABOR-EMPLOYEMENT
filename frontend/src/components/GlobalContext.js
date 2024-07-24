@@ -4,7 +4,6 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
-  const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
   const [machineCategory, setMachineCategory] = useState(null);
   const [machineId, setMachineId] = useState(null);
