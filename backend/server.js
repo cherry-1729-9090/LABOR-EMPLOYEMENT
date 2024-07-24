@@ -48,7 +48,7 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/workhistories', workHistoryRoutes);
 app.use('/api/ratings', ratingsRoutes);
 
-// Server setup
+// Server setu
 const PORT = process.env.PORT || 3500;
 
 app.listen(PORT, () => {
