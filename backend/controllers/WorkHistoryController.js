@@ -50,3 +50,12 @@ exports.deleteWorkHistory = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.getWorkHistoryByEmployeeId = async (req, res) => {
+    try {
+        const histories = await WorkHistory.find({ workerId: req.params.employeeId }).populate('workerId');
+        res.json(histories);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
