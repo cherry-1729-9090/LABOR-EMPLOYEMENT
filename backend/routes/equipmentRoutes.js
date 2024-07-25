@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const equipmentController = require('../controllers/EquipmentController');
 
-router.post('/create/', equipmentController.createEquipment);
+router.post('/create', equipmentController.createEquipment);
 router.get('/', equipmentController.getAllEquipment);
 router.get('/get/:id', equipmentController.getEquipmentById);
 router.put('/update/:id', equipmentController.updateEquipment);

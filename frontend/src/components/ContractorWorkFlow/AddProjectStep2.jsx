@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Select, Input, Button, Typography, message } from 'antd';
+import { Form, Select, Input, Button, Typography, message, Upload, DatePicker, Checkbox } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { createJob } from '../../calls/jobCalls';
 
 const { Title } = Typography;
@@ -11,18 +12,16 @@ const AddProject = () => {
     jobType: '',
     name: '',
     location: '',
-    workers: '',
-    duration: '',
+    workersRequired: '',
     payRate: '',
-    completionTime: '',
-    accommodation: '',
-    transportation: '',
-    timeline: '',
-    images: []
+    accomodation: false,
+    transportation: false,
+    startDate: null,
+    endDate: null,
   });
 
   const [errors, setErrors] = useState({
-    workers: '',
+    workersRequired: '',
     payRate: '',
     images: ''
   });
@@ -34,7 +33,7 @@ const AddProject = () => {
     setDetails({ ...projectDetails, [name]: value });
 
     // Validate the input fields
-    if (name === 'workers' || name === 'payRate') {
+    if (name === 'workersRequired' || name === 'payRate') {
       if (!/^\d+$/.test(value)) {
         setErrors((prev) => ({ ...prev, [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} should only contain numbers.` }));
       } else {
@@ -47,16 +46,16 @@ const AddProject = () => {
     setDetails({ ...projectDetails, [name]: value });
   };
 
-  const handleImageChange = (event) => {
-    const files = Array.from(event.target.files);
-    const images = files.filter(file => file.type.startsWith('image/'));
-    setDetails({ ...projectDetails, images });
+  const handleCheckboxChange = (name, value) => {
+    setDetails({ ...projectDetails, [name]: value });
+  };
 
-    if (images.length === 0) {
-      setErrors((prev) => ({ ...prev, images: 'Please upload at least one image.' }));
-    } else {
-      setErrors((prev) => ({ ...prev, images: '' }));
-    }
+  const handleDateChange = (name, value) => {
+    setDetails({ ...projectDetails, [name]: value });
+  };
+
+  const handleUpload = ({ fileList }) => {
+    setDetails({ ...projectDetails, images: fileList });
   };
 
   const handleProceed = async () => {
@@ -69,14 +68,21 @@ const AddProject = () => {
           jobType: projectDetails.jobType,
           location: projectDetails.location,
           payRate: parseFloat(projectDetails.payRate),
-          // postedBy will be set in the backend
-          skillsRequired: projectDetails.name, // You might want to add a separate field for this
-          // applicationDeadline will be set in AddProjectStep3
-          // Add other fields as needed
+          skillsRequired: projectDetails.name,
+          workersRequired: parseInt(projectDetails.workersRequired, 10),
+          accomodation: projectDetails.accomodation,
+          transportation: projectDetails.transportation,
+          startDate: projectDetails.startDate ? projectDetails.startDate.toISOString() : null,
+          endDate: projectDetails.endDate ? projectDetails.endDate.toISOString() : null,
         };
 
         const createdJob = await createJob(jobData);
-        navigate('/add-project-step3', { state: { job: createdJob, projectDetails } });
+        if (createdJob) {
+          console.log('Job created:', createdJob);
+          navigate('/contractor/add-project-step3', { state: { job: createdJob, projectDetails } });
+        } else {
+          message.error('Failed to create job. Please try again.');
+        }
       } catch (error) {
         message.error('Failed to create job. Please try again.');
         console.error('Error creating job:', error);
@@ -86,7 +92,92 @@ const AddProject = () => {
     }
   };
 
-  // ... rest of the component (return statement) remains the same
+  return (
+    <div style={{ padding: '16px' }}>
+      <Title level={2} style={{ textAlign: 'center' }}>Add New Project</Title>
+      <Form layout="vertical">
+        <Form.Item label="Job Type" required>
+          <Select
+            placeholder="Select a job type"
+            value={projectDetails.jobType}
+            onChange={(value) => handleSelectChange('jobType', value)}
+          >
+            <Option value="construction">Construction</Option>
+            <Option value="hospitality">Hospitality</Option>
+            <Option value="agriculture">Agriculture</Option>
+            <Option value="other">Other</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label="Project Name" required>
+          <Input
+            name="name"
+            placeholder="Enter project name"
+            value={projectDetails.name}
+            onChange={handleChange}
+          />
+        </Form.Item>
+        <Form.Item label="Location" required>
+          <Input
+            name="location"
+            placeholder="Enter location"
+            value={projectDetails.location}
+            onChange={handleChange}
+          />
+        </Form.Item>
+        <Form.Item label="Number of Workers Required" required help={errors.workersRequired} validateStatus={errors.workersRequired ? 'error' : ''}>
+          <Input
+            name="workersRequired"
+            placeholder="Enter number of workers required"
+            value={projectDetails.workersRequired}
+            onChange={handleChange}
+          />
+        </Form.Item>
+        <Form.Item label="Pay Rate (per day)" required help={errors.payRate} validateStatus={errors.payRate ? 'error' : ''}>
+          <Input
+            name="payRate"
+            placeholder="Enter pay rate"
+            value={projectDetails.payRate}
+            onChange={handleChange}
+          />
+        </Form.Item>
+        <Form.Item label="Accommodation" required>
+          <Checkbox
+            checked={projectDetails.accomodation}
+            onChange={(e) => handleCheckboxChange('accomodation', e.target.checked)}
+          >
+            Provided
+          </Checkbox>
+        </Form.Item>
+        <Form.Item label="Transportation" required>
+          <Checkbox
+            checked={projectDetails.transportation}
+            onChange={(e) => handleCheckboxChange('transportation', e.target.checked)}
+          >
+            Provided
+          </Checkbox>
+        </Form.Item>
+        <Form.Item label="Start Date" required>
+          <DatePicker
+            style={{ width: '100%' }}
+            value={projectDetails.startDate}
+            onChange={(date) => handleDateChange('startDate', date)}
+          />
+        </Form.Item>
+        <Form.Item label="End Date" required>
+          <DatePicker
+            style={{ width: '100%' }}
+            value={projectDetails.endDate}
+            onChange={(date) => handleDateChange('endDate', date)}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" onClick={handleProceed} style={{ width: '100%' }}>
+            Proceed
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
+  );
 };
 
 export default AddProject;

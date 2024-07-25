@@ -11,7 +11,7 @@ function MachinesRented() {
     const [machinesRented, setMachinesRented] = useState([]);
     const { userId, setMachineOwnerId } = useAppContext();
     const navigate = useNavigate();
-
+    console.log('userId', userId);
     useEffect(() => {
         async function fetchMachines() {
             try {

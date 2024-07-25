@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import { updateJob } from '../../calls/jobCalls';
+import { useAppContext } from '../GlobalContext';
+
 
 const AddProjectStep3 = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const location = useLocation();
   const { job, projectDetails } = location.state || {};
-
+  const {userId} = useAppContext();
+  console.log('userId', userId);
   const [ownerDetails, setOwnerDetails] = useState({
     name: '',
     mobile: '',

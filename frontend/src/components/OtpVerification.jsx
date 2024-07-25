@@ -12,7 +12,7 @@ function OtpVerification() {
   const location = useLocation();
   const { mobileNumber } = useAppContext();
   const { setUserId } = useAppContext();
-
+  
   function handleOtpChange(e, index) {
     const value = e.target.value;
     if (/^[0-9]$/.test(value) || value === '') {
@@ -51,43 +51,45 @@ function OtpVerification() {
     console.log(values);
     
     try {
-      const response = await fetch('http://localhost:3500/api/auth/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          mobileNumber: mobileNumber,
-          otpCode: values
-        })
-      });
+        const response = await fetch('http://localhost:3500/api/auth/verify-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mobileNumber: mobileNumber,
+                otpCode: values
+            })
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.message === 'OTP verified successfully') {
-        try {
-          const user = await getUserByNumber(mobileNumber);
-          if (user) {
-            setUserId(user._id);
-            navigate('/role-selection');
-          } else {
-            await createUser({ mobileNumber: mobileNumber });
-            const newUser = await getUserByNumber(mobileNumber);
-            setUserId(newUser._id);
-            navigate('/user-details'); 
-          }
-        } catch (err) {
-          console.error(err);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-      }
-    } catch (err) {
-      console.error('Error during OTP verification:', err);
-    }
-  }
 
+        const data = await response.json();
+        if (data.message === 'OTP verified successfully') {
+            try {
+                const userResponse = await getUserByNumber(mobileNumber);
+                if (userResponse && !userResponse.message) {
+                    console.log(userResponse);
+                    console.log(userResponse._id);
+                    setUserId(userResponse._id);
+                    navigate('/role-selection');
+                } else {
+                    const newUser = await createUser({ mobileNumber: mobileNumber });
+                    console.log(newUser);
+                    console.log(newUser._id);
+                    setUserId(newUser._id);
+                    navigate('/user-details'); 
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    } catch (err) {
+        console.error('Error during OTP verification:', err);
+    }
+}
 
   return (
     <div className='otpPage'>

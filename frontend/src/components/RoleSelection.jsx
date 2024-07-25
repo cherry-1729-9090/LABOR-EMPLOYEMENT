@@ -10,9 +10,9 @@ function RoleSelection() {
   const [loading, setLoading] = useState(false);
   const { userId, setSelectedRole } = useAppContext();
   const navigate = useNavigate();
-
+  console.log('userId', userId);
   const mapRoleToUserType = (role) => {
-    switch (role) {
+    switch (role) { 
       case 'hire_labor':
         return 'contractor';
       case 'sell_machines':

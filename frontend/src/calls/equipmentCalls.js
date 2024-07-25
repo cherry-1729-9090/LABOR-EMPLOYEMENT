@@ -2,7 +2,7 @@ import { axiosInstance } from "./axiosInstance";
 
 const getEquipmentByUserId = async (userId) => {
     try {
-        const response = await axiosInstance.get(`/equipment/buyer/${userId}`);
+        const response = await axiosInstance.get(`/equipment/user/${userId}`);
         return response.data;
     } catch (error) {
         return error.response.data;
@@ -29,8 +29,9 @@ const getEquipmentById = async (equipmentId) => {
 }
 
 const createEquipment = async (equipment) => {
+    console.log('equipment', equipment);
     try {
-        const response = await axiosInstance.post('/equipment', equipment);
+        const response = await axiosInstance.post('/equipment/create', equipment);
         return response.data;
     } catch (error) {
         return error.response.data;

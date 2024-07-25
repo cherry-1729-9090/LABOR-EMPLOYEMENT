@@ -3,9 +3,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.createUser = async (req, res) => {
+    console.log('req.body', req.body);
+    console.log('user called for creating')
     try {
+        console.log('req.body', req.body);
         const newUser = new User(req.body);
+        console.log('newUser', newUser);
         await newUser.save();
+        console.log('user created')
         res.status(201).json(newUser);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -49,6 +54,8 @@ exports.getUserByNumber = async(req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
+    console.log('req.body', req.body);
+    console.log('user called for updating')
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedUser);

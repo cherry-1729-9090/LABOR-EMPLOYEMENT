@@ -10,12 +10,13 @@ const { Title, Text } = Typography;
 function RenteeMachines() {
     const [machines, setMachines] = useState([]);
     const { userId, setRenteeId, setMachineId } = useAppContext();
+    console.log('userId', userId);
     const navigate = useNavigate();
-
     useEffect(() => {
         async function fetchMachines() {
             try {
                 setRenteeId(userId);
+                console.log("userId", userId);
                 const machines = await getEquipmentByUserId(userId);
                 setMachines(machines);
             } catch (err) {
@@ -26,6 +27,7 @@ function RenteeMachines() {
     }, [userId, setRenteeId]);
 
     const removeMachine = async (equipmentId, index) => {
+        console.log('equipmentId', equipmentId);
         try {
             await deleteEquipment(equipmentId);
             message.success('Machine removed successfully');
@@ -45,11 +47,14 @@ function RenteeMachines() {
         }
     };
 
+    const Addmachine = ()=>{
+        navigate('/machines/rentee/add-machine');
+    }
+
     return (
         <div className='RenteeMachines'>
             <Title level={1}>Your Machines</Title>
             <List
-                grid={{ gutter: 16, column: 4 }}
                 dataSource={machines}
                 renderItem={(machine, index) => (
                     <List.Item>
@@ -82,7 +87,7 @@ function RenteeMachines() {
                 )}
             />
 
-            <Button type='primary' className='addMachine'>Add a Machine</Button>
+            <Button type='primary' className='addMachine' onClick={Addmachine}>Add a Machine</Button>
         </div>
     );
 }

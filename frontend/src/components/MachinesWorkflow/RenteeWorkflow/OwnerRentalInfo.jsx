@@ -24,7 +24,7 @@ function OwnerRentalInfo() {
                 // Pre-fill the form with user data
                 form.setFieldsValue({
                     ownerName: `${userData.firstName} ${userData.lastName}`,
-                    ownerMobile: userData.phone,
+                    ownerMobile: userData.mobileNumber,
                     ownerLocation: userData.location,
                 });
             } catch (error) {
@@ -66,10 +66,9 @@ function OwnerRentalInfo() {
 
     return (
         <div className='OwnerRentalInfo'>
-            <Title level={2}>Owner and Rental Information</Title>
             <Form form={form} layout='vertical' onFinish={handleSubmit}>
                 <section className='ownerInfo'>
-                    <Title level={3}>Owner Information</Title>
+                    <h1>Owner Information</h1>
                     <Form.Item name='ownerName' label='Name' rules={[{ required: true, message: 'Please enter the owner\'s name' }]}>
                         <Input placeholder='Name' />
                     </Form.Item>

@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, List, Typography, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getJobsByPostedById } from '../../calls/jobCalls';
@@ -7,18 +7,23 @@ import { useAppContext } from '../GlobalContext';
 const { Title, Text } = Typography;
 
 const ProjectList = () => {
-  const {userId} = useAppContext();
+  const { userId } = useAppContext();
+  console.log('userId', userId);
   const [projects, setProjects] = useState([]);
-  useEffect(() => {
-    try {
-      projects = getJobsByPostedById(userId);
-    }
-    catch (error) {
-      console.error('Error fetching jobs:', error);
-    }
-  }, []);
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const projectsData = await getJobsByPostedById(userId);
+        setProjects(projectsData);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      }
+    };
+
+    fetchProjects();
+  }, [userId]);
 
   const handleStatusToggle = (index) => {
     const updatedProjects = [...projects];
@@ -33,7 +38,8 @@ const ProjectList = () => {
       content: confirmMessage,
       onOk: () => {
         updatedProjects[index].status = projectStatus === 'In progress' ? 'Completed' : 'In progress';
-        // updateProjectStatus(updatedProjects);
+        setProjects(updatedProjects);
+        // You may want to update the backend with the new status here
       },
     });
   };

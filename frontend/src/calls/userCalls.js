@@ -14,7 +14,7 @@ const getUserByNumber = async (mobileNumber) => {
         const response = await axiosInstance.get(`/users/getbynumber/${mobileNumber}`);
         return response.data;
     } catch (error) {
-        return error.response.data;
+        return { message: error.response.data };
     }
 }
 
@@ -38,7 +38,7 @@ const updateUser = async (id, user) => {
 
 const createUser = async (user) => {
     try {
-        const response = await axiosInstance.post('/users', user);
+        const response = await axiosInstance.post('/users/create', user);
         return response.data;
     } catch (error) {
         return error.response.data;
