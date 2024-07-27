@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Select, Input, Button, Typography, message, Upload, DatePicker, Checkbox } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
 import { createJob } from '../../calls/jobCalls';
-
+import {useAppContext} from '../GlobalContext';
 const { Title } = Typography;
 const { Option } = Select;
 
 const AddProject = () => {
+  const {contractorId} = useAppContext();
   const [projectDetails, setDetails] = useState({
     jobType: '',
     name: '',
@@ -47,6 +47,7 @@ const AddProject = () => {
   };
 
   const handleCheckboxChange = (name, value) => {
+    console.log('name', name, 'value', value);
     setDetails({ ...projectDetails, [name]: value });
   };
 

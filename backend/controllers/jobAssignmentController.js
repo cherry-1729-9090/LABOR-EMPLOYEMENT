@@ -13,8 +13,8 @@ exports.createJobAssignment = async (req, res) => {
 exports.getAllJobAssignments = async (req, res) => {
     try {
         const jobAssignments = await JobAssignment.find()
-            .populate('workerId')
-            .populate('jobId');
+            .populate('worker')
+            .populate('job');
         res.status(200).json(jobAssignments);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -24,12 +24,27 @@ exports.getAllJobAssignments = async (req, res) => {
 exports.getJobAssignmentById = async (req, res) => {
     try {
         const jobAssignment = await JobAssignment.findById(req.params.id)
-            .populate('workerId')
-            .populate('jobId');
+            .populate('worker')
+            .populate('job');
         if (jobAssignment) {
             res.status(200).json(jobAssignment);
         } else {
             res.status(404).json({ message: 'Job assignment not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getJobAssignmentsByJobId = async (req, res) => {
+    try {
+        const jobAssignments = await JobAssignment.find({ job: req.params.jobId })
+            .populate('worker')
+            .populate('job');
+        if (jobAssignments.length > 0) {
+            res.status(200).json(jobAssignments);
+        } else {
+            res.status(404).json({ message: 'No job assignments found for this job' });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });

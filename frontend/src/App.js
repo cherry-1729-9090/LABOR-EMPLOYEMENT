@@ -9,7 +9,6 @@ import UserDetails from './components/UserDetails';
 import MachinesForRent from './components/MachinesWorkflow/BorrowerWorkFlow/MachinesForRent';
 
 // Contractor Workflow
-import AddProjectStep1 from './components/ContractorWorkFlow/AddProjectStep1';
 import AddProjectStep2 from './components/ContractorWorkFlow/AddProjectStep2';
 import AddProjectStep3 from './components/ContractorWorkFlow/AddProjectStep3';
 import EmployeeDetails from './components/ContractorWorkFlow/EmployeeDetails';
@@ -24,7 +23,7 @@ import CompletedPage from './components/LaborWorkFlow/CompletedPage';
 import ContractPage from './components/LaborWorkFlow/ContractPage';
 import EmployeePage from './components/LaborWorkFlow/EmployeePage';
 import HomePage from './components/LaborWorkFlow/HomePage';
-import JobListening from './components/LaborWorkFlow/JobListening';
+// import JobListening from './components/LaborWorkFlow/JobListening';
 import MainPage from './components/LaborWorkFlow/MainPage';
 import OngoingPage from './components/LaborWorkFlow/OngoingPage';
 import WorkInformationPage from './components/LaborWorkFlow/WorkInformationPage';
@@ -61,7 +60,6 @@ function App() {
             <Route path="/user-details" element={<UserDetails />} />
 
             {/* Contractor Workflow */}
-            <Route path="/contractor/add-project-step1" element={<AddProjectStep1 />} />
             <Route path="/contractor/add-project-step2" element={<AddProjectStep2 />} />
             <Route path="/contractor/add-project-step3" element={<AddProjectStep3 />} />
             <Route path="/contractor/employee-details" element={<EmployeeDetails />} />

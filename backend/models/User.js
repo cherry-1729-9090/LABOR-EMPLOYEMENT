@@ -7,7 +7,6 @@ const Schema = mongoose.Schema;
 const userTypes = {
   LABOR_WORKER: "labor_worker",
   CONTRACTOR: "contractor",
-  GENERAL: "general"
 };
 
 const userSchema = new Schema({

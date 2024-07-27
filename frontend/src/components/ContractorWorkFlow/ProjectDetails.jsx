@@ -1,54 +1,123 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, Button, Typography, Space, Spin, Row, Col } from 'antd';
+import { useAppContext } from '../GlobalContext';
+import { getJobById } from '../../calls/jobCalls';
 
-const ProjectDetails = ({ projects }) => {
-  const { projectId } = useParams();
+const { Title, Text } = Typography;
+
+const ProjectDetails = () => {
+  const { projectId } = useAppContext();
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Ensure that projects and the project with projectId exist
-  if (!projects || !projects[projectId]) {
-    console.error('Project not found:', projectId);
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const projectData = await getJobById(projectId);
+        setProject(projectData);
+      } catch (error) {
+        console.error('Error fetching job:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, []);
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
-          <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
-            Project not found
-          </h2>
-          <button 
-            className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-            onClick={() => navigate('/project-list')}
-          >
-            Back to Projects
-          </button>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5', padding: '24px' }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  const project = projects[projectId];
+  if (!project) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5', padding: '24px' }}>
+        <Card style={{ width: '100%', maxWidth: '600px', textAlign: 'center' }} bordered={false}>
+          <Title level={2}>Project Not Found</Title>
+          <Button 
+            type="primary" 
+            style={{ marginTop: '24px', width: '100%' }} 
+            onClick={() => navigate('/project-list')}
+          >
+            Back to Projects
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">{project.name}</h2>
-        <div className="space-y-4">
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Work Progress:</span> {project.progress || 'Not started'}
-          </div>
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Amount Spent:</span> {project.amountSpent || 'Not available'}
-          </div>
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Deadline:</span> {project.deadline || 'No deadline'}
-          </div>
-        </div>
-        <button 
-          className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-          onClick={() => navigate('/project-applications')}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5', padding: '24px' }}>
+      <Card style={{ width: '100%', maxWidth: '800px', borderRadius: '8px' }} bordered={false}>
+        <Title level={2} style={{ textAlign: 'center', marginBottom: '24px' }}>{project.name}</Title>
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Job Type:</Text> {project.jobType}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Location:</Text> {project.location}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Pay Rate:</Text> ₹{project.payRate} per day
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Skills Required:</Text> {project.skillsRequired}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Workers Required:</Text> {project.workersRequired}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Accommodation Provided:</Text> {project.accomodation ? 'Yes' : 'No'}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Transportation Provided:</Text> {project.transportation ? 'Yes' : 'No'}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Start Date:</Text> {new Date(project.startDate).toLocaleDateString()}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>End Date:</Text> {new Date(project.endDate).toLocaleDateString()}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                <Text strong>Status:</Text> {project.status}
+              </Card>
+            </Col>
+          </Row>
+        </Space>
+        <Button 
+          type="primary" 
+          style={{ marginTop: '24px', width: '100%' }} 
+          onClick={() => navigate('/contractor/project-applications')}
         >
           View Employees
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   );
 };

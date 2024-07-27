@@ -50,3 +50,18 @@ exports.deleteLabourWorker = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+exports.getLabourWorkerByUserId = async (req, res) => {
+    try {
+        const labourWorker = await LabourWorker.findOne({ userId: req.body.user }).populate('userId');
+        if (labourWorker) {
+            res.json(labourWorker);
+        } else {
+            res.status(404).json({ message: 'Labour worker not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+

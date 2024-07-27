@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, List, Typography, Modal } from 'antd';
+import { Button, List, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getJobsByPostedById } from '../../calls/jobCalls';
 import { useAppContext } from '../GlobalContext';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const ProjectList = () => {
-  const { userId } = useAppContext();
-  console.log('userId', userId);
+  const { userId, setProjectId, contractorId } = useAppContext();
   const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const projectsData = await getJobsByPostedById(userId);
+        const projectsData = await getJobsByPostedById(contractorId);
         setProjects(projectsData);
       } catch (error) {
         console.error('Error fetching jobs:', error);
@@ -23,31 +22,11 @@ const ProjectList = () => {
     };
 
     fetchProjects();
-  }, [userId]);
-
-  const handleStatusToggle = (index) => {
-    const updatedProjects = [...projects];
-    const projectStatus = updatedProjects[index].status;
-
-    const confirmMessage = projectStatus === 'In progress'
-      ? 'Are you sure you want to mark this project as completed?'
-      : 'Are you sure you want to mark this project as in progress?';
-
-    Modal.confirm({
-      title: 'Confirm Action',
-      content: confirmMessage,
-      onOk: () => {
-        updatedProjects[index].status = projectStatus === 'In progress' ? 'Completed' : 'In progress';
-        setProjects(updatedProjects);
-        // You may want to update the backend with the new status here
-      },
-    });
-  };
+  }, [contractorId]);
 
   const handleProjectClick = (index) => {
-    if (projects[index].status === 'In progress') {
-      navigate(`/project-details/${index}`);
-    }
+    setProjectId(projects[index]._id);
+    navigate(`/contractor/project-details`);
   };
 
   const handleAddProject = () => {
@@ -57,49 +36,45 @@ const ProjectList = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, padding: '16px', overflow: 'auto' }}>
-        <Title level={2} style={{ textAlign: 'center' }}>Your Projects</Title>
+        <h1>Your Projects</h1>
         {projects.length > 0 ? (
           <List
             dataSource={projects}
             renderItem={(project, index) => (
-              <List.Item
-                key={index}
-                actions={[
-                  <Button
-                    type={project.status === 'In progress' ? 'primary' : 'default'}
-                    onClick={() => handleStatusToggle(index)}
+              <List.Item key={index}>
+                <div style={{ width: '100%' }} onClick={() => handleProjectClick(index)}>
+                  <a
+                    style={{ cursor: 'pointer', color: '#1890ff', fontSize: '18px', fontWeight: 'bold' }}
                   >
-                    {project.status === 'In progress' ? 'Mark as Completed' : 'Mark as In Progress'}
-                  </Button>
-                ]}
-              >
-                <Card
-                  style={{ width: '100%' }}
-                  title={
-                    <a
-                      onClick={() => handleProjectClick(index)}
-                      style={{ cursor: 'pointer', color: '#1890ff' }}
-                    >
-                      {project.name}
-                    </a>
-                  }
-                >
+                    {project.name}
+                  </a>
+                  <div>
+                    <Text strong>Job Type:</Text> {project.jobType}
+                  </div>
+                  <div>
+                    <Text strong>Location:</Text> {project.location}
+                  </div>
+                  <div>
+                    <Text strong>Pay Rate:</Text> {project.payRate}
+                  </div>
                   <Text
                     style={{
-                      backgroundColor: project.status === 'In progress' ? '#faad14' : '#52c41a',
+                      backgroundColor: project.status === 'In progress' ? '#faad14' : project.status === 'Open' ? '#1890ff' : '#52c41a',
                       color: '#fff',
                       padding: '4px 8px',
                       borderRadius: '12px',
+                      marginTop: '8px',
+                      display: 'inline-block',
                     }}
                   >
                     {project.status}
                   </Text>
-                </Card>
+                </div>
               </List.Item>
             )}
           />
         ) : (
-          <div style={{ textAlign: 'center', color: '#999' }}>No projects available</div>
+          <div>No projects found.</div>
         )}
       </div>
       <div style={{ padding: '16px', backgroundColor: '#fff', borderTop: '1px solid #e8e8e8' }}>

@@ -2,15 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const jobAssignmentSchema = new Schema({
-    workerId: {
+    worker: {
         type: Schema.Types.ObjectId,
         ref: 'LabourWorker',
-        required: true
     },
-    jobId: {
+    job: {
         type: Schema.Types.ObjectId,
         ref: 'Job',
-        required: true
     },
     assignmentDate: {
         type: Date,

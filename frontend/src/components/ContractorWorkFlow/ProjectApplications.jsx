@@ -1,55 +1,111 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, List, Button, Typography, Alert } from 'antd';
+import { Card, List, Button, Typography, Spin } from 'antd';
+import { useAppContext } from '../GlobalContext';
+import { getJobAssignmentsByJobId } from '../../calls/JobAssignmentCalls';
+import { updateJob } from '../../calls/jobCalls';
 
 const { Title, Text } = Typography;
 
-const ProjectApplications = ({ applications = [] }) => {
-  const [currentApplications, setCurrentApplications] = useState(applications);
+const ProjectApplications = () => {
+  const { projectId } = useAppContext();
+  const [applications, setApplications] = useState([]);
+  const [projectStatus, setProjectStatus] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setCurrentApplications(applications);
-  }, [applications]);
+    const fetchApplications = async () => {
+      try {
+        const applicationsData = await getJobAssignmentsByJobId(projectId);
+        setApplications(applicationsData.applications || []);
+        setProjectStatus(applicationsData.projectStatus);
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchApplications();
+  }, [projectId]);
 
-  const rejectEmployee = (employeeId) => {
-    const updatedApplications = currentApplications.filter((_, index) => index !== parseInt(employeeId));
-    setCurrentApplications(updatedApplications);
+  const handleStatusChange = async (newStatus) => {
+    setLoading(true);
+    try {
+      await updateJob(projectId, { status: newStatus });
+      setProjectStatus(newStatus);
+    } catch (error) {
+      console.error('Error updating job status:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (!Array.isArray(applications) || applications.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+        <Card className="w-full max-w-2xl">
+          <Title level={3} className="text-center">No Applications Available</Title>
+          <Button 
+            type="primary" 
+            className="mt-6 w-full"
+            onClick={() => navigate('/contractor/project-list')}
+          >
+            Back to Projects
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
       <Card className="w-full max-w-2xl">
         <Title level={3} className="text-center">Number of People Applied</Title>
         <div className="space-y-4">
-          {currentApplications.length > 0 ? (
-            <List
-              itemLayout="vertical"
-              dataSource={currentApplications}
-              renderItem={(application, index) => (
-                <List.Item
-                  key={index}
-                  onClick={() => navigate(`/employee-details/${index}`)}
-                  className="cursor-pointer hover:bg-gray-50 transition duration-300"
-                >
-                  <List.Item.Meta
-                    title={<Text strong>Employee {application.name}</Text>}
-                    description={<Text>Ratings: {application.rating}</Text>}
-                  />
-                </List.Item>
-              )}
-            />
-          ) : (
-            <Alert message="No applications available" type="info" showIcon />
-          )}
+          <List
+            itemLayout="vertical"
+            dataSource={applications}
+            renderItem={(application, index) => (
+              <List.Item
+                key={index}
+                onClick={() => navigate(`/employee-details/${application.worker._id}`)}
+                className="cursor-pointer hover:bg-gray-50 transition duration-300"
+              >
+                <List.Item.Meta
+                  title={<Text strong>{application.worker.userId.firstName} {application.worker.userId.lastName}</Text>}
+                  description={<Text>Rating: {application.worker.rating || 'No rating'}</Text>}
+                />
+              </List.Item>
+            )}
+          />
         </div>
-        <Button 
-          type="primary" 
-          className="mt-6 w-full"
-          onClick={() => alert('Project Started')}
-        >
-          Start the Project
-        </Button>
+        {projectStatus === 'Open' && (
+          <Button 
+            type="primary" 
+            className="mt-6 w-full"
+            onClick={() => handleStatusChange('In progress')}
+          >
+            Start the Project
+          </Button>
+        )}
+        {projectStatus === 'In progress' && (
+          <Button 
+            type="primary" 
+            className="mt-6 w-full"
+            onClick={() => handleStatusChange('Completed')}
+          >
+            Mark as Completed
+          </Button>
+        )}
       </Card>
     </div>
   );

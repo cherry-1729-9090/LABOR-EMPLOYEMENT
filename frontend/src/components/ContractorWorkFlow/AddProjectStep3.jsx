@@ -1,22 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import { updateJob } from '../../calls/jobCalls';
 import { useAppContext } from '../GlobalContext';
-
+import {getUserById} from '../../calls/userCalls';
+import {getContractorById} from '../../calls/contractorCalls';
 
 const AddProjectStep3 = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const location = useLocation();
   const { job, projectDetails } = location.state || {};
-  const {userId} = useAppContext();
-  console.log('userId', userId);
+  const { contractorId } = useAppContext();
   const [ownerDetails, setOwnerDetails] = useState({
     name: '',
     mobile: '',
     company: ''
   });
+
+  let user = null;
+  useEffect(()=>{
+    console.log('contractorId',contractorId);
+    const contractor = getContractorById(contractorId);
+    console.log('contractor',JSON.stringify(contractor));
+    console.log('contractor.userId',contractor.userId);
+    try{
+      const contractor = getContractorById(contractorId);
+      user = contractor.userId;
+    }
+    catch(error){
+      console.error('Error fetching user:', error);
+    }
+  },[])
 
   const handleChange = (changedValues, allValues) => {
     setOwnerDetails(allValues);
@@ -25,20 +40,23 @@ const AddProjectStep3 = () => {
   const handleAddProject = async () => {
     try {
       const values = await form.validateFields();
-      
       const updatedJobData = {
         ...job,
-        postedBy: {
-          name: values.name,
-          mobile: values.mobile,
-          company: values.company
-        },
-        applicationDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        postedBy:  contractorId, 
+        name: values.name,
+        mobile:  values.mobile,
+        company: values.company
       };
 
-      await updateJob(job._id, updatedJobData);
-      message.success('Project added successfully!');
-      navigate('/contractor/project-list');
+      console.log('Updated job data:', updatedJobData);
+
+      const updatedJob = await updateJob(job._id, updatedJobData);
+      if (updatedJob) {
+        message.success('Project added successfully!');
+        navigate('/contractor/project-list');
+      } else {
+        message.error('Failed to add project. Please try again.');
+      }
     } catch (error) {
       message.error('Failed to add project. Please try again.');
       console.error('Error adding project:', error);
@@ -82,9 +100,9 @@ const AddProjectStep3 = () => {
             <Input placeholder="Company (if any)" />
           </Form.Item>
           <Form.Item>
-            <Button 
-              type="primary" 
-              onClick={handleAddProject} 
+            <Button
+              type="primary"
+              onClick={handleAddProject}
               block
             >
               Add Project

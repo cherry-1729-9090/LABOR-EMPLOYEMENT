@@ -34,11 +34,11 @@ const skillsRoutes = require('./routes/skillsRoutes');
 const workHistoryRoutes = require('./routes/workHistoryRoutes');
 const ratingsRoutes = require('./routes/ratingsRoutes');
 const authRoutes = require('./routes/authRoutes'); // Assuming you have this route
-
+const jobAssignmentRoutes = require('./routes/jobAssignmentRoutes'); // Assuming you have this route
 // Using routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/labourworkers', labourWorkerRoutes);
+app.use('/api/workers', labourWorkerRoutes);
 app.use('/api/contractors', contractorRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/jobs', jobRoutes);
@@ -47,7 +47,7 @@ app.use('/api/purchasetransactions', purchaseTransactionRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/workhistories', workHistoryRoutes);
 app.use('/api/ratings', ratingsRoutes);
-
+app.use('/api/jobAssignments', jobAssignmentRoutes); // Using jobAssignmentRoutes
 // Server setu
 const PORT = process.env.PORT || 3500;
 
