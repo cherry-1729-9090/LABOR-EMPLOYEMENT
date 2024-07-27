@@ -43,67 +43,44 @@ function RoleSelection() {
     }
   };
 
-  const handleRoleSelection = async (role) => {
-    setLoading(true);
-
-    try {
-      if (role === 'hire_labor') {
-        const contractor = await getContractorByUserId(userId);
-        if (contractor) {
-          console.log('this is the contractor fetched in role-selection page', contractor);
-          setContractorId(contractor._id);
-        } else {
-          const newContractor = await createContractor({ userId }); // Adjust fields as needed
-          console.log('this is the new contractor created in role-selection page', newContractor);
-          setContractorId(newContractor._id);
-        }
-      } else if (role === 'worker') {
-        const worker = await getWorkerByUserId(userId);
-        if (worker) {
-          setWorkerId(worker._id);
-        } else {
-          const newWorker = await createWorker({ userId, workerImage: 'default_image.png' });
-          setWorkerId(newWorker._id);
-        }
-      }
-
-      // Update user type
-      const updatedUser = await updateUser(userId, { userType: mapRoleToUserType(role) });
-      setLoading(false);
-
-      if (updatedUser) {
-        message.success('Role updated successfully');
-        switch (role) {
-          case 'hire_labor':
-            navigate('/contractor/project-list');
-            break;
-          case 'worker':
-            navigate('/labor/applied');
-            break;
-          case 'sell_machines':
-            navigate('/machines/rentee/rentee-machines');
-            break;
-          case 'rent_machines':
-            navigate('/machines/borrower/machines-rented');
-            break;
-          default:
-            break;
-        }
-      } else {
-        message.error('Failed to update role');
-      }
-    } catch (error) {
-      setLoading(false);
-      console.error('Error updating user role:', error);
-      message.error('Failed to update role');
-    }
-  };
-
-  const onChange = (e) => {
+  const onChange = async (e) => {
     const selectedRole = e.target.value;
     setValue(selectedRole);
     setSelectedRole(selectedRole);
-    handleRoleSelection(selectedRole);
+
+    if (userId) {
+      try {
+        const updatedUser = await updateUser(userId, { userType: mapRoleToUserType(selectedRole) });
+        setLoading(false);
+        if (updatedUser) {
+          message.success('Role updated successfully');
+          switch (selectedRole) {
+            case 'hire_labor':
+              navigate('/contractor/project-list');
+              break;
+            case 'worker':
+              navigate('/labor/applied');
+              break;
+            case 'sell_machines':
+              navigate('/machines/rentee/rentee-machines');
+              break;
+            case 'rent_machines':
+              navigate('/machines/borrower/machines-rented');
+              break;
+            default:
+              break;
+          }
+        } else {
+          message.error('Failed to update role');
+        }
+      } catch (error) {
+        setLoading(false);
+        console.error('Error updating user role:', error);
+        message.error('Failed to update role');
+      }
+    } else {
+      message.error('User ID is missing');
+    }
   };
 
   const options = [

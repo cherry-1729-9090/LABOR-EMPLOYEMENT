@@ -3,17 +3,18 @@ import React, { createContext, useState, useContext } from 'react';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [userId, setUserId] = useState('');
-  const [selectedEquipmentId, setSelectedEquipmentId] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
-  const [machineCategory, setMachineCategory] = useState('');
-  const [machineId, setMachineId] = useState('');
-  const [MachineOwnerId, setMachineOwnerId] = useState('');
-  const [BorrowerId, setBorrowerId] = useState('');
-  const [RenteeId, setRenteeId] = useState('');
-  const [contractorId, setContractorId] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [projectId, setProjectId] = useState('');
+  const [userId, setUserId] = useState(null);
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [machineCategory, setMachineCategory] = useState(null);
+  const [machineId, setMachineId] = useState(null);
+  const [MachineOwnerId, setMachineOwnerId] = useState(null);
+  const [BorrowerId, setBorrowerId] = useState(null);
+  const [RenteeId, setRenteeId] = useState(null);
+  const [contractorId,setContractorId] = useState(null);
+  const [mobileNumber,setMobileNumber] = useState(null);
+
+
   return (
     <AppContext.Provider value={{
       userId, setUserId,
