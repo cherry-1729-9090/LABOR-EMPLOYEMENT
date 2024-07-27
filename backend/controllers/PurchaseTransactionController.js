@@ -33,6 +33,16 @@ exports.getPurchaseTransactionById = async (req, res) => {
     }
 };
 
+exports.getPurchaseTransactionByBuyerId = async (req, res) => {
+    try {
+        const transactions = await PurchaseTransaction.find({ buyerId: req.params.buyerId }).populate('equipmentId').populate('buyerId');
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
 exports.updatePurchaseTransaction = async (req, res) => {
     try {
         const updatedTransaction = await PurchaseTransaction.findByIdAndUpdate(req.params.id, req.body, { new: true });

@@ -1,0 +1,22 @@
+.MachinesAvailable{
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100vw;
+    height: 100vh;
+    padding: 50px;
+}
+
+p{
+    background-color: #FFC2C2;
+}
+
+.sortOption{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+    justify-content: flex-end;
+}

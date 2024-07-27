@@ -1,0 +1,15 @@
+.MachinesRented{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+button{
+    margin-bottom: 50px;
+}

@@ -1,0 +1,23 @@
+.MachinesForRent{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+.mfrDet{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100vw;
+    height: 60vh;
+    flex-direction: column;
+    margin-bottom: 50px;
+}
+
+.mrfInput{
+    width: 70vw;
+    height: 5vh;
+}

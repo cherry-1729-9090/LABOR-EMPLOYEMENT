@@ -34,6 +34,9 @@ exports.getJobById = async (req, res) => {
 };
 
 exports.updateJob = async (req, res) => {
+    console.log('reached server for uodating the job')
+    console.log('req.params:', req.params);
+    console.log('req.body:', req.body);
     try {
         const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedJob);
@@ -50,3 +53,14 @@ exports.deleteJob = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.getJobByPostedById = async (req, res) => {
+    try {
+        const jobs = await Job.find({ postedBy: req.params.id }).populate('postedBy');
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
