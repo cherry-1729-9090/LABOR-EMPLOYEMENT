@@ -3,7 +3,7 @@ import { Card, Radio, Typography, Space, message, Spin } from 'antd';
 import { useAppContext } from './GlobalContext';
 import { getUserById, updateUser } from '../calls/userCalls';
 import { createContractor, getContractorByUserId } from '../calls/contractorCalls'; 
-import { createWorker, getWorkerByUserId } from '../calls/employees'; 
+import { createLabourWorker, getLabourWorkerByUserId } from '../calls/employees'; 
 import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
@@ -51,6 +51,8 @@ function RoleSelection() {
         const contractor = await getContractorByUserId(userId);
         if (contractor) {
           console.log('this is the contractor fetched in role-selection page', contractor);
+          console.log(contractor.userId._id)
+          console.log(contractor._id)
           setContractorId(contractor._id);
         } else {
           const newContractor = await createContractor({ userId }); // Adjust fields as needed
@@ -58,11 +60,12 @@ function RoleSelection() {
           setContractorId(newContractor._id);
         }
       } else if (role === 'worker') {
-        const worker = await getWorkerByUserId(userId);
+        const worker = await getLabourWorkerByUserId(userId);
         if (worker) {
+          console.log('this is the worker fetched in role-selection page', worker);
           setWorkerId(worker._id);
         } else {
-          const newWorker = await createWorker({ userId, workerImage: 'default_image.png' });
+          const newWorker = await createLabourWorker({ userId, workerImage: 'default_image.png' });
           setWorkerId(newWorker._id);
         }
       }
@@ -78,7 +81,7 @@ function RoleSelection() {
             navigate('/contractor/project-list');
             break;
           case 'worker':
-            navigate('/labor/applied');
+            navigate('/labor/main');
             break;
           case 'sell_machines':
             navigate('/machines/rentee/rentee-machines');

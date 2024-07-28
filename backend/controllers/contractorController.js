@@ -24,7 +24,7 @@ exports.getContractorById = async (req, res) => {
     console.log('Fetching contractor with id:', req.params.id);
     console.log('reached here for the contractor id')
     try {
-        const contractor = await Contractor.findById(req.params.id);
+        const contractor = await Contractor.findById(req.params.id).populate('userId');
         if (!contractor) {
             res.status(404).json({ message: 'Contractor not found' });
         } else {

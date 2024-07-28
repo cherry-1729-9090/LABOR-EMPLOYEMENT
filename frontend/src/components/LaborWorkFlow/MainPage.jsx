@@ -1,131 +1,94 @@
 import React, { useState, useEffect } from 'react';
+import { Card, Typography, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Dropdown, Menu, Card, List, Typography, Row, Col } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
-import {useAppContext} from '../GlobalContext';
-
+import { useAppContext } from '../GlobalContext';
+import { getJobAssignmentsByWorkerId } from '../../calls/JobAssignmentCalls';
 
 const { Title, Text } = Typography;
 
 const MainPage = () => {
-  const [currentWork, setCurrentWork] = useState([]);
-  const [appliedWork, setAppliedWork] = useState([]);
-  const [completedWork, setCompletedWork] = useState([]);
-  const navigate = useNavigate(); // Initialize useNavigate
-  const {userId} = useAppContext(); // Get userId from GlobalContext
+  const { workerId } = useAppContext();
+  const [appliedJobs, setAppliedJobs] = useState([]);
+  const [ongoingJobs, setOngoingJobs] = useState([]);
+  const [completedJobs, setCompletedJobs] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const fetchJobAssignments = async () => {
+      try {
+        const jobAssignments = await getJobAssignmentsByWorkerId(workerId);
+        console.log('Job assignments:', jobAssignments);
+        const applied = [];
+        const ongoing = [];
+        const completed = [];
 
-  const fetchData = () => {
-    
-  };
+        jobAssignments.forEach(assignment => {
+          switch (assignment.job.status) {
+            case 'Open':
+              applied.push(assignment);
+              break;
+            case 'In progress':
+              ongoing.push(assignment);
+              break;
+            case 'Completed':
+              completed.push(assignment);
+              break;
+            default:
+              break;
+          }
+        });
 
-  const handleMenuClick = ({ key }) => {
-    if (key === 'login') {
-      navigate('/labor/employee');
+        setAppliedJobs(applied.slice(0, 3));
+        setOngoingJobs(ongoing.slice(0, 3));
+        setCompletedJobs(completed.slice(0, 3));
+      } catch (error) {
+        console.error('Error fetching job assignments:', error);
+      }
+    };
+
+    if (workerId) {
+      fetchJobAssignments();
     }
-  };
+  }, [workerId]);
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="login">
-        Login Details
-      </Menu.Item>
-    </Menu>
+  const renderJobAssignment = (assignment) => (
+    <div className="p-4 mb-4 bg-white shadow rounded-lg">
+      <Link to={`/labor/work-status/${assignment.job._id}`} className="text-blue-600 hover:underline">
+        <Title level={4}>{assignment.job.name}</Title>
+      </Link>
+      <Text><strong>Job Type:</strong> {assignment.job.jobType}</Text><br />
+      <Text><strong>Location:</strong> {assignment.job.location}</Text><br />
+      <Text><strong>Pay Rate:</strong> {assignment.job.payRate}</Text>
+    </div>
+  );
+
+  const renderCardContent = (jobs, title, viewAllLink) => (
+    <Card title={title} bordered={false} className="shadow-lg rounded-lg">
+      {jobs.length > 0 ? jobs.map(renderJobAssignment) : 
+        <div className="flex justify-center items-center h-24">
+          <Text>No {title.toLowerCase()} projects.</Text>
+        </div>}
+      {jobs.length > 0 && (
+        <Button type="link" style={{ background: 'blue', color: 'white' }} onClick={() => navigate(viewAllLink)} className="text-blue-600 hover:underline">
+          View All {title}
+        </Button>
+      )}
+    </Card>
   );
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5', padding: '20px' }}>
-      <Row justify="end">
-        <Dropdown overlay={menu} placement="bottomRight">
-          <Button shape="circle" icon={<SettingOutlined style={{ fontSize: '24px' }} />} />
-        </Dropdown>
-      </Row>
-      <Title level={1} style={{ textAlign: 'center', color: '#D9534F', margin: '20px 0' }}>Your Projects</Title>
-      
-      <Row gutter={[16, 16]} justify="center">
-        <Col xs={24} md={12} lg={8}>
-          <Card
-            title={ 
-              <Row justify="space-between">
-                <Link to="/labor/ongoing" style={{ color: '#D9534F' }}>
-                  Ongoing Project
-                </Link>
-                <Text>({currentWork.length})</Text>
-              </Row>
-            }
-            bordered={false}
-            style={{ backgroundColor: '#ffffff', borderRadius: '15px' }}
-          >
-            <List
-              dataSource={currentWork}
-              renderItem={work => (
-                <List.Item key={work.id}>
-                  {work.title} - {work.date}
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-        
-        <Col xs={24} md={12} lg={8}>
-          <Card
-            title={
-              <Row justify="space-between">
-                <Link to="/labor/applied" style={{ color: '#D9534F' }}>
-                  Applied Projects
-                </Link>
-                <Text>({appliedWork.length})</Text>
-              </Row>
-            }
-            bordered={false}
-            style={{ backgroundColor: '#ffffff', borderRadius: '15px' }}
-          >
-            <List
-              dataSource={appliedWork}
-              renderItem={work => (
-                <List.Item key={work.id}>
-                  {work.title} - {work.date}
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-        
-        <Col xs={24} md={12} lg={8}>
-          <Card
-            title={
-              <Row justify="space-between">
-                <Link to="/labor/completed" style={{ color: '#D9534F' }}>
-                  Completed Projects
-                </Link>
-                <Text>({completedWork.length})</Text>
-              </Row>
-            }
-            bordered={false}
-            style={{ backgroundColor: '#ffffff', borderRadius: '15px' }}
-          >
-            <List
-              dataSource={completedWork}
-              renderItem={work => (
-                <List.Item key={work.id}>
-                  {work.title} - {work.date}
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row justify="center" style={{ marginTop: '20px' }}>
-        <Link to="/labor/work-selection">
-          <Button type="primary" style={{ backgroundColor: '#D9534F', borderColor: '#D9534F' }}>
-            Search for More Work
-          </Button>
-        </Link>
-      </Row>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <Title level={2} className="text-center">Job Assignments</Title>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {renderCardContent(appliedJobs, 'Applied Projects', '/labor/applied')}
+          {renderCardContent(ongoingJobs, 'Ongoing Projects', '/labor/ongoing')}
+          {renderCardContent(completedJobs, 'Completed Projects', '/labor/completed')}
+        </div>
+        <Button type="primary" onClick={() => navigate('/labor/work-selection')} className="block mx-auto mt-6">
+          Apply for New Job
+        </Button>
+      </div>
     </div>
   );
 };

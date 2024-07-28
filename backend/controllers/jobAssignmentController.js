@@ -76,3 +76,21 @@ exports.deleteJobAssignment = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.getJobAssignmentsByWorkerId = async (req, res) => {
+    console.log('Worker ID received:', req.params.workerId); // Log the workerId
+    try {
+        const jobAssignments = await JobAssignment.find({ worker: req.params.workerId })
+            .populate('worker')
+            .populate('job');
+        if (jobAssignments.length > 0) {
+            console.log('Job assignments found:', jobAssignments); // Log the jobAssignments
+            res.status(200).json(jobAssignments);
+        } else {
+            res.status(404).json({ message: 'No job assignments found for this worker' });
+        }
+    } catch (error) {
+        console.error('Error fetching job assignments by worker ID:', error);
+        res.status(500).json({ message: error.message });
+    }
+};

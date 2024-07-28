@@ -2,7 +2,7 @@ import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Image, Input, message, Upload } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { RegisterEmployee } from "../../calls/employees"; // API call to save employee details
+import { createLabourWorker } from "../../calls/employees"; // API call to save employee details
 
 function EmployeePage({ contactNumber }) {
   const [employee, setEmployee] = useState(null);
@@ -47,7 +47,7 @@ function EmployeePage({ contactNumber }) {
         formData.append("photo", photo.originFileObj);
       }
 
-      const response = await RegisterEmployee(formData);
+      const response = await createLabourWorker(formData);
       if (response.success) {
         message.success(response.message);
         form.resetFields();

@@ -53,3 +53,14 @@ export const getJobAssignmentsByJobId = async (jobId) => {
         console.error("Error fetching job assignments by job ID:", error);
     }
 }
+
+export const getJobAssignmentsByWorkerId = async (workerId) => {
+    console.log('Fetching job assignments for worker ID:', workerId);
+    try {
+        const response = await axiosInstance.get(`/jobAssignments/getByWorkerId/${workerId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching job assignments by worker ID:', error);
+        return [];
+    }
+};

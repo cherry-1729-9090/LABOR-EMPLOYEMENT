@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Upload, message, Card, Image } from 'antd';
 import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { useAppContext } from '../GlobalContext';
+import { getLabourWorkerById } from '../../calls/employees';
+import { createJobAssignment } from '../../calls/JobAssignmentCalls';
+import { getJobById } from '../../calls/jobCalls';
 
 // Inline phone number validation function
 const validatePhoneNumber = (number) => {
@@ -11,11 +15,14 @@ const validatePhoneNumber = (number) => {
   return phoneRegex.test(number);
 };
 
-const ApplyPage = ({ employeeData = {} }) => {
+const ApplyPage = () => {
   const [form] = Form.useForm();
-  const [photo, setPhoto] = useState(employeeData.photo || null);
-  const [extraContact, setExtraContact] = useState(employeeData.extraContact || '');
+  const [photo, setPhoto] = useState(null);
+  const [extraContact, setExtraContact] = useState('');
   const navigate = useNavigate();
+  const { workerId, projectId } = useAppContext();
+  const [worker, setWorker] = useState(null);
+  const [project, setProject] = useState(null);
 
   const handlePhotoUpload = ({ file }) => {
     const isImage = file.type.startsWith('image/');
@@ -32,16 +39,66 @@ const ApplyPage = ({ employeeData = {} }) => {
   };
 
   const onFinish = async (values) => {
-    // Validate mobile number
     if (!validatePhoneNumber(values.additionalMobile)) {
       message.error('Invalid mobile number!');
       return;
     }
-    
-    // Perform form submission logic here, such as API calls
-    message.success('Details updated successfully!');
-    navigate('/next-page'); // Navigate to the next page after successful update
+
+    const assignment = {
+      worker: workerId,
+      job: projectId,
+      demandedWage: values.demandedWage,
+      extracontact: values.extraContact,
+      additionalExpectations: values.expectations
+    };
+
+    try {
+      await createJobAssignment(assignment);
+      message.success('Job assignment created successfully!');
+      navigate('/labor/main');
+    } catch (error) {
+      message.error('Error creating job assignment:', error);
+      console.error('Error creating job assignment:', error);
+    }
   };
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const projectData = await getJobById(projectId);
+        setProject(projectData);
+        console.log('Project fetched in the apply page:', projectData);
+      } catch (error) {
+        console.error('Error fetching project:', error);
+      }
+    };
+    fetchProject();
+  }, [projectId]);
+
+  useEffect(() => {
+    const fetchWorker = async () => {
+      try {
+        const workerData = await getLabourWorkerById(workerId);
+        setWorker(workerData);
+        console.log('Worker fetched in the apply page:', workerData);
+        // Set form fields with worker's existing data
+        form.setFieldsValue({
+          name: workerData.userId.firstName || '',
+          lastName: workerData.userId.lastName || '',
+          aadhaar: '', // Replace with worker's aadhaar if available
+          specialization: '', // Replace with worker's specialization if available
+          demandedWage: '', // Replace with worker's demanded wage if available
+          extraContact: '', // Replace with worker's extra contact if available
+          additionalMobile: workerData.userId.mobileNumber || '',
+        });
+
+        setPhoto(workerData.workerImage);
+      } catch (error) {
+        console.error('Error fetching worker:', error);
+      }
+    };
+    fetchWorker();
+  }, [workerId, form]);
 
   return (
     <div className="p-4 md:p-8 lg:p-12 max-w-3xl mx-auto bg-gradient-to-br from-gray-50 via-gray-100 to-white rounded-xl shadow-lg space-y-6">
@@ -51,11 +108,11 @@ const ApplyPage = ({ employeeData = {} }) => {
           <div className="flex items-center justify-center mb-4 relative">
             {photo ? (
               <div className="relative inline-block w-full">
-                <Image 
-                  width={100} 
-                  src={URL.createObjectURL(photo)} 
-                  alt="Profile" 
-                  className="rounded-full border-2 border-gray-300 shadow-md" 
+                <Image
+                  width={100}
+                  src={photo}
+                  alt="Profile"
+                  className="rounded-full border-2 border-gray-300 shadow-md"
                 />
                 <Button
                   icon={<DeleteOutlined />}
@@ -87,15 +144,6 @@ const ApplyPage = ({ employeeData = {} }) => {
             form={form}
             layout="vertical"
             onFinish={onFinish}
-            initialValues={{ 
-              name: employeeData.name || '',
-              lastName: employeeData.lastName || '',
-              aadhaar: employeeData.aadhaar || '',
-              specialization: employeeData.specialization || '',
-              demandedWage: employeeData.demandedWage || '',
-              extraContact: employeeData.extraContact || '',
-              additionalMobile: employeeData.additionalMobile || ''
-            }}
           >
             <Form.Item
               label="Name"
@@ -104,7 +152,7 @@ const ApplyPage = ({ employeeData = {} }) => {
             >
               <Input placeholder="Enter your name" className="rounded-lg border-gray-300" />
             </Form.Item>
-            
+
             <Form.Item
               label="Last Name"
               name="lastName"
@@ -122,7 +170,7 @@ const ApplyPage = ({ employeeData = {} }) => {
             </Form.Item>
 
             <Form.Item
-              label="Specialization"
+              label="Skills"
               name="specialization"
               rules={[{ required: true, message: 'Specialization is required!' }]}
             >
@@ -142,7 +190,7 @@ const ApplyPage = ({ employeeData = {} }) => {
               name="extraContact"
             >
               <Input placeholder="Enter extra contact information" value={extraContact} onChange={(e) => setExtraContact(e.target.value)} className="rounded-lg border-gray-300" />
-            </Form.Item>        
+            </Form.Item>
 
             <Form.Item
               label="Additional Expectations"
