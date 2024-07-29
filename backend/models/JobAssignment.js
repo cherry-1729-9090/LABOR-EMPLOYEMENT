@@ -23,6 +23,14 @@ const jobAssignmentSchema = new Schema({
     additionalExpectations:{
         type: String,
     },
+    status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected'],
+        default: 'pending',
+    },
+    amountRecieved: {
+        type: Number,
+    },
 });
 
 module.exports = mongoose.model('JobAssignment', jobAssignmentSchema);
