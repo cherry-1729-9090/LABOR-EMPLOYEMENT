@@ -1,70 +1,95 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, Typography, Descriptions, Button, Spin } from 'antd';
+import { useAppContext } from '../GlobalContext';
+import { getJobAssignmentById } from '../../calls/JobAssignmentCalls';
 
-const EmployeeDetails = ({ applications, rejectEmployee }) => {
-  const { employeeId } = useParams();
+const { Title } = Typography;
+
+const EmployeeDetails = () => {
+  const { JobAssignmentId } = useAppContext();
   const navigate = useNavigate();
+  const [jobAssignment, setJobAssignment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  console.log('JobAssignmentId:', JobAssignmentId);
 
-  console.log('Employee ID from params:', employeeId);
-  console.log('Applications object:', applications);
+  useEffect(() => {
+    const fetchJobAssignmentDetails = async () => {
+      try {
+        const assignment = await getJobAssignmentById(JobAssignmentId);
+        setJobAssignment(assignment);
+      } catch (error) {
+        console.error('Error fetching job assignment details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Check if the employeeId exists in the applications object
-  if (!applications || !applications[employeeId]) {
-    console.error('Employee not found:', employeeId);
+    if (JobAssignmentId) {
+      fetchJobAssignmentDetails();
+    } else {
+      setLoading(false);
+    }
+  }, [JobAssignmentId]);
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
-          <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
-            Employee not found
-          </h2>
-          <button 
-            className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-            onClick={() => navigate('/project-applications')}
-          >
-            Back to Applications
-          </button>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-6">
+        <Spin size="large" />
       </div>
     );
   }
 
-  const employee = applications[employeeId];
+  if (!jobAssignment) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-6">
+        <Card className="w-full max-w-md sm:max-w-2xl">
+          <Title level={3} className="text-center">Job Assignment not found</Title>
+          <Button 
+            type="primary" 
+            className="mt-4 w-full"
+            onClick={() => navigate('/contractor/project-applications')}
+          >
+            Back to Applications
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
-  const handleReject = () => {
-    rejectEmployee(employeeId);
-    navigate('/project-applications'); // Navigate back to the applications list after rejection
-  };
+  const { worker, job, demandedWage, extracontact, additionalExpectations, assignmentDate } = jobAssignment;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
-          Applicant Name: {employee.name}
-        </h2>
-        <div className="space-y-4">
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Mobile Number:</span> {employee.mobile}
-          </div>
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Location:</span> {employee.location}
-          </div>
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Demanded Wage:</span> {employee.wage}
-          </div>
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Specialization:</span> {employee.specialization}
-          </div>
-          <div className="p-4 border border-gray-300 rounded-lg">
-            <span className="font-medium text-gray-700">Ratings:</span> {employee.rating}
-          </div>
-        </div>
-        <button 
-          className="mt-6 w-full py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300"
-          onClick={handleReject}
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-6">
+      <Card className="w-full max-w-md sm:max-w-2xl">
+        <Title level={3} className="text-center">Applicant Details</Title>
+        <Descriptions bordered column={1} size="small" className="mt-4">
+          <Descriptions.Item label="Name">{worker.userId.firstName} {worker.userId.lastName}</Descriptions.Item>
+          <Descriptions.Item label="Mobile Number">{worker.userId.mobileNumber}</Descriptions.Item>
+          <Descriptions.Item label="Location">{worker.userId.location}</Descriptions.Item>
+          <Descriptions.Item label="Demanded Wage">{demandedWage}</Descriptions.Item>
+          <Descriptions.Item label="Specialization">{job.skillsRequired}</Descriptions.Item>
+          <Descriptions.Item label="Rating">{worker.rating || 'No rating'}</Descriptions.Item>
+          <Descriptions.Item label="Job Type">{job.jobType}</Descriptions.Item>
+          <Descriptions.Item label="Job Location">{job.location}</Descriptions.Item>
+          <Descriptions.Item label="Pay Rate">{job.payRate}</Descriptions.Item>
+          <Descriptions.Item label="Start Date">{new Date(job.startDate).toLocaleDateString()}</Descriptions.Item>
+          <Descriptions.Item label="End Date">{new Date(job.endDate).toLocaleDateString()}</Descriptions.Item>
+          <Descriptions.Item label="Accommodation">{job.accomodation ? 'Yes' : 'No'}</Descriptions.Item>
+          <Descriptions.Item label="Transportation">{job.transportation ? 'Yes' : 'No'}</Descriptions.Item>
+          <Descriptions.Item label="Extra Contact">{extracontact}</Descriptions.Item>
+          <Descriptions.Item label="Additional Expectations">{additionalExpectations}</Descriptions.Item>
+          <Descriptions.Item label="Assignment Date">{new Date(assignmentDate).toLocaleDateString()}</Descriptions.Item>
+        </Descriptions>
+        <Button 
+          type="primary" 
+          className="mt-4 w-full"
+          onClick={() => navigate('/contractor/project-applications')}
         >
-          Reject
-        </button>
-      </div>
+          Back to Applications
+        </Button>
+      </Card>
     </div>
   );
 };

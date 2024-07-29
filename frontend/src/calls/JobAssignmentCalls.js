@@ -46,8 +46,10 @@ export const deleteJobAssignment = async (id) => {
 }
 
 export const getJobAssignmentsByJobId = async (jobId) => {
+    console.log('Fetching job assignments for job ID:', jobId);
     try {
         const response = await axiosInstance.get(`/jobAssignments/getByJobId/${jobId}`);
+        console.log('Job assignments found:', response.data);
         return response.data;
     } catch (error) {
         console.error("Error fetching job assignments by job ID:", error);

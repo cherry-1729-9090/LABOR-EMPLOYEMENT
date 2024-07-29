@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { List, Typography, Card, Button } from 'antd';
+import { List, Button, Typography, Card, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../GlobalContext';
 import { getJobAssignmentsByWorkerId } from '../../calls/JobAssignmentCalls';
-import { set } from 'mongoose';
 
 const { Title, Text } = Typography;
 
 const OngoingPage = () => {
-  const { workerId ,setProjectId,setJobAssignmentId} = useAppContext();
+  const { workerId, setProjectId, setJobAssignmentId } = useAppContext();
   const [ongoingWork, setOngoingWork] = useState([]);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchOngoingWork = async () => {
       try {
@@ -27,29 +27,35 @@ const OngoingPage = () => {
     }
   }, [workerId]);
 
-  const handleNavigation = (jobId,assignmentId) => {
+  const handleNavigation = (jobId, assignmentId) => {
     setJobAssignmentId(assignmentId);
     setProjectId(jobId);
     navigate(`/labor/work-status`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-6 sm:px-10 lg:px-20 font-sans">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       <Title level={2} className="text-red-600 mb-8">Ongoing Projects</Title>
-      <Card bordered={false} className="w-full max-w-3xl bg-white shadow-md rounded-lg">
+      <Card bordered={false} className="w-full max-w-2xl bg-white shadow-lg rounded-lg">
         <List
-          bordered
+          itemLayout="vertical"
           dataSource={ongoingWork}
           renderItem={work => (
             <List.Item
-              className="border-b py-4 px-6 last:border-b-0 mb-4"
-              onClick={() => handleNavigation(work.job._id,work._id)}
+              className="cursor-pointer hover:bg-gray-50 transition duration-300"
+              onClick={() => handleNavigation(work.job._id, work._id)}
             >
-              <Title level={4}>{work.job.name}</Title>
-              <Text><strong>Job Type:</strong> {work.job.jobType}</Text><br />
-              <Text><strong>Location:</strong> {work.job.location}</Text><br />
-              <Text><strong>Pay Rate:</strong> {work.job.payRate}</Text><br />
-              <Text><strong>Assignment Date:</strong> {work.assignmentDate}</Text>
+              <List.Item.Meta
+                title={<Title level={4}>{work.job.name}</Title>}
+                description={
+                  <Space direction="vertical">
+                    <Text><strong>Job Type:</strong> {work.job.jobType}</Text>
+                    <Text><strong>Location:</strong> {work.job.location}</Text>
+                    <Text><strong>Pay Rate:</strong> ₹{work.job.payRate} per day</Text>
+                    <Text><strong>Assignment Date:</strong> {new Date(work.assignmentDate).toLocaleDateString()}</Text>
+                  </Space>
+                }
+              />
             </List.Item>
           )}
         />
