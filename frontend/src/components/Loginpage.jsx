@@ -16,7 +16,7 @@ const LoginPage = () => {
     try {
       console.log(localMobileNumber);
       setMobileNumber(localMobileNumber);
-      const response = await axios.post('http://localhost:3500/api/auth/send-otp', { mobileNumber: localMobileNumber }, {
+      const response = await axios.post('https://labor-employement.onrender.com/api/auth/send-otp', { mobileNumber: localMobileNumber }, {
         headers: {
           'Content-Type': 'application/json',
         },
