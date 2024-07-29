@@ -51,7 +51,7 @@ function OtpVerification() {
     console.log(values);
     
     try {
-        const response = await fetch('http://localhost:3500/api/auth/verify-otp', {
+        const response = await fetch('https://labor-employement.onrender.com/api/auth/verify-otp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

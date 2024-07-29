@@ -8,12 +8,29 @@ const jobAssignmentSchema = new Schema({
     },
     job: {
         type: Schema.Types.ObjectId,
-        ref: 'Job',
+        ref: 'Jobs',
+    },
+    demandedWage : {
+        type: Number,
     },
     assignmentDate: {
         type: Date,
         default: Date.now
-    }
+    },
+    extracontact: {
+        type: String,
+    },
+    additionalExpectations:{
+        type: String,
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected'],
+        default: 'pending',
+    },
+    amountRecieved: {
+        type: Number,
+    },
 });
 
 module.exports = mongoose.model('JobAssignment', jobAssignmentSchema);

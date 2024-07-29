@@ -1,4 +1,3 @@
-// controllers/LabourWorkerController.js
 const LabourWorker = require('../models/LabourWorker');
 
 exports.createLabourWorker = async (req, res) => {
@@ -35,7 +34,7 @@ exports.getLabourWorkerById = async (req, res) => {
 
 exports.updateLabourWorker = async (req, res) => {
     try {
-        const updatedLabourWorker = await LabourWorker.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedLabourWorker = await LabourWorker.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('userId');
         res.json(updatedLabourWorker);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -51,10 +50,10 @@ exports.deleteLabourWorker = async (req, res) => {
     }
 };
 
-
 exports.getLabourWorkerByUserId = async (req, res) => {
+    console.log('this is the user id', req.params.userId);
     try {
-        const labourWorker = await LabourWorker.findOne({ userId: req.body.user }).populate('userId');
+        const labourWorker = await LabourWorker.findOne({ userId: req.params.userId }).populate('userId');
         if (labourWorker) {
             res.json(labourWorker);
         } else {
@@ -64,4 +63,3 @@ exports.getLabourWorkerByUserId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-

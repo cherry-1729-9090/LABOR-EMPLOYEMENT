@@ -1,37 +1,65 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
-import { updateJob } from '../../calls/jobCalls';
+import { updateJob, getJobById } from '../../calls/jobCalls';
+import { getContractorById } from '../../calls/contractorCalls';
 import { useAppContext } from '../GlobalContext';
-import {getUserById} from '../../calls/userCalls';
-import {getContractorById} from '../../calls/contractorCalls';
 
 const AddProjectStep3 = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { job, projectDetails } = location.state || {};
-  const { contractorId } = useAppContext();
+  const { contractorId, projectId } = useAppContext();
+  const [job, setJob] = useState(null);
+  const [contractor, setContractor] = useState(null);
   const [ownerDetails, setOwnerDetails] = useState({
     name: '',
     mobile: '',
     company: ''
   });
 
-  let user = null;
-  useEffect(()=>{
-    console.log('contractorId',contractorId);
-    const contractor = getContractorById(contractorId);
-    console.log('contractor',JSON.stringify(contractor));
-    console.log('contractor.userId',contractor.userId);
-    try{
-      const contractor = getContractorById(contractorId);
-      user = contractor.userId;
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const fetchedJob = await getJobById(projectId);
+        setJob(fetchedJob);
+      } catch (error) {
+        console.error('Error fetching job:', error);
+      }
+    };
+
+    if (projectId) {
+      fetchJob();
     }
-    catch(error){
-      console.error('Error fetching user:', error);
+  }, [projectId]);
+
+  useEffect(() => {
+    const fetchContractor = async () => {
+      try {
+        const contractor = await getContractorById(contractorId);
+        if (contractor && contractor.userId) {
+          setContractor(contractor);
+          console.log('Contractor:', contractor);
+          const user = contractor.userId;
+          setOwnerDetails({
+            name: user.firstName + ' ' + user.lastName,
+            mobile: user.mobileNumber,
+            company: contractor.companyName || ''
+          });
+          form.setFieldsValue({
+            name: user.firstName + ' ' + user.lastName,
+            mobile: user.mobileNumber,
+            company: contractor.companyName || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching contractor:', error);
+      }
+    };
+
+    if (contractorId) {
+      fetchContractor();
     }
-  },[])
+  }, [contractorId, form]);
 
   const handleChange = (changedValues, allValues) => {
     setOwnerDetails(allValues);
@@ -42,10 +70,7 @@ const AddProjectStep3 = () => {
       const values = await form.validateFields();
       const updatedJobData = {
         ...job,
-        postedBy:  contractorId, 
-        name: values.name,
-        mobile:  values.mobile,
-        company: values.company
+        postedBy: contractorId,
       };
 
       console.log('Updated job data:', updatedJobData);
@@ -53,6 +78,7 @@ const AddProjectStep3 = () => {
       const updatedJob = await updateJob(job._id, updatedJobData);
       if (updatedJob) {
         message.success('Project added successfully!');
+        console.log('Updated job:', updatedJob);
         navigate('/contractor/project-list');
       } else {
         message.error('Failed to add project. Please try again.');
