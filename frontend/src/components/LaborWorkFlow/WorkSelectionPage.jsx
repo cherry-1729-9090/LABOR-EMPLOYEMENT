@@ -15,7 +15,8 @@ const WorkSelectionPage = () => {
     const fetchAvailableWorks = async () => {
       try {
         const jobs = await getJobs();
-        setAvailableWorks(jobs);
+        const openJobs = jobs.filter(job => job.status === 'Open'); // Filter jobs with status 'Open'
+        setAvailableWorks(openJobs);
       } catch (error) {
         console.error('Error fetching available works:', error);
       }
