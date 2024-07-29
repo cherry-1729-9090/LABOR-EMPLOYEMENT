@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const workHistoryController = require('../controllers/workHistoryController');
+const workHistoryController = require('../controllers/WorkHistoryController');
 
 router.post('/', workHistoryController.createWorkHistory);
 router.get('/', workHistoryController.getAllWorkHistories);
