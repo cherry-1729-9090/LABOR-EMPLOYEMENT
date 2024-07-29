@@ -32,10 +32,10 @@ function RoleSelection() {
     switch (role) {
       case 'hire_labor':
         return 'contractor';
-      case 'sell_machines':
-        return 'seller';
-      case 'rent_machines':
-        return 'buyer';
+      // case 'sell_machines':
+      //   return 'seller';
+      // case 'rent_machines':
+      //   return 'buyer';
       case 'worker':
         return 'labor_worker';
       default:
@@ -111,8 +111,8 @@ function RoleSelection() {
 
   const options = [
     { label: 'Hire labor', value: 'hire_labor' },
-    { label: 'Sell Machines', value: 'sell_machines' },
-    { label: 'Rent Machines', value: 'rent_machines' },
+    // { label: 'Sell Machines', value: 'sell_machines' },
+    // { label: 'Rent Machines', value: 'rent_machines' },
     { label: 'Worker', value: 'worker' },
   ];
 
