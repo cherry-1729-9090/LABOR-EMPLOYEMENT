@@ -1,46 +1,105 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Card, Button, Typography, Descriptions, message, Spin } from 'antd';
+import { useAppContext } from '../GlobalContext';
+import { getJobById } from '../../calls/jobCalls';
+import { deleteJobAssignment } from '../../calls/JobAssignmentCalls';
+
+const { Title } = Typography;
 
 const WorkStatusPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { projectId, JobAssignmentId } = useAppContext();
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for work details
-  const workDetails = {
-    1: { title: 'Completed Project 1', status: 'Completed', duration: '3 months', startDate: '2024-01-01', endDate: '2024-04-01', location: 'New York', amountEarned: '$2000' },
-    2: { title: 'Completed Project 2', status: 'Completed', duration: '6 months', startDate: '2023-01-01', endDate: '2023-07-01', location: 'San Francisco', amountEarned: '$5000' },
-    // Add other statuses if needed
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const projectData = await getJobById(projectId);
+        setProject(projectData);
+      } catch (error) {
+        console.error('Error fetching project:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (projectId) {
+      fetchProject();
+    }
+  }, [projectId]);
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await deleteJobAssignment(JobAssignmentId);
+      message.success('Job assignment deleted successfully!');
+      navigate('/labor/main'); // Navigate to applied projects after deletion
+    } catch (error) {
+      message.error('Error deleting job assignment:', error);
+      console.error('Error deleting job assignment:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Fetch the work details using the id from the route parameters
-  const work = workDetails[id];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+        <Card className="w-full max-w-md sm:max-w-2xl" bordered={false}>
+          <Title level={2} className="text-center">No details available</Title>
+          <Button 
+            type="primary" 
+            className="mt-6 w-full" 
+            onClick={() => navigate('/labor/main')}
+          >
+            Back to Main
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-red-50 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-10 font-sans">
-      <h1 className="text-3xl sm:text-4xl font-extrabold text-red-600 mb-6 sm:mb-8">
-        Work Status
-      </h1>
-      {work ? (
-        <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md sm:max-w-3xl">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">{work.title}</h2>
-          <div className="space-y-2">
-            <p className="text-lg text-gray-700"><strong>Status:</strong> {work.status}</p>
-            <p className="text-lg text-gray-700"><strong>Duration:</strong> {work.duration}</p>
-            <p className="text-lg text-gray-700"><strong>Start Date:</strong> {work.startDate}</p>
-            <p className="text-lg text-gray-700"><strong>End Date:</strong> {work.endDate}</p>
-            <p className="text-lg text-gray-700"><strong>Location:</strong> {work.location}</p>
-            <p className="text-lg text-gray-700"><strong>Amount Earned:</strong> {work.amountEarned}</p>
-          </div>
-        </div>
-      ) : (
-        <p className="text-lg text-gray-700 mt-4">No details available.</p>
-      )}
-      <button 
-        onClick={() => navigate(-1)} 
-        className="mt-6 sm:mt-8 bg-red-600 hover:bg-red-700 transition-colors text-base sm:text-lg font-semibold rounded-md shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-white"
-      >
-        Back
-      </button>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-6">
+      <Card className="w-full max-w-md sm:max-w-2xl" bordered={false}>
+        <Title level={2} className="text-center mb-4 text-red-600">Work Status</Title>
+        <Descriptions title={project.name} bordered column={1} size="middle">
+          <Descriptions.Item label="Status">{project.status}</Descriptions.Item>
+          <Descriptions.Item label="Job Type">{project.jobType}</Descriptions.Item>
+          <Descriptions.Item label="Location">{project.location}</Descriptions.Item>
+          <Descriptions.Item label="Pay Rate">₹{project.payRate} per day</Descriptions.Item>
+          <Descriptions.Item label="Start Date">{new Date(project.startDate).toLocaleDateString()}</Descriptions.Item>
+          <Descriptions.Item label="End Date">{new Date(project.endDate).toLocaleDateString()}</Descriptions.Item>
+          <Descriptions.Item label="Skills Required">{project.skillsRequired}</Descriptions.Item>
+          <Descriptions.Item label="Workers Required">{project.workersRequired}</Descriptions.Item>
+          <Descriptions.Item label="Accommodation">{project.accomodation ? 'Yes' : 'No'}</Descriptions.Item>
+          <Descriptions.Item label="Transportation">{project.transportation ? 'Yes' : 'No'}</Descriptions.Item>
+          <Descriptions.Item label="Posted By">{project.postedBy && project.postedBy.userId ? `${project.postedBy.userId.firstName} ${project.postedBy.userId.lastName}` : 'N/A'}</Descriptions.Item>
+          <Descriptions.Item label="Mobile Number">{project.postedBy && project.postedBy.userId ? project.postedBy.userId.mobileNumber : 'N/A'}</Descriptions.Item>
+        </Descriptions>
+        {project.status === 'Open' && (
+          <Button 
+            type="primary" 
+            danger 
+            onClick={handleDelete}
+            loading={loading}
+            className="mt-4 w-full"
+          >
+            Delete Application
+          </Button>
+        )}
+      </Card>
     </div>
   );
 };

@@ -23,13 +23,13 @@ import CompletedPage from './components/LaborWorkFlow/CompletedPage';
 import ContractPage from './components/LaborWorkFlow/ContractPage';
 import EmployeePage from './components/LaborWorkFlow/EmployeePage';
 import HomePage from './components/LaborWorkFlow/HomePage';
-import JobListening from './components/LaborWorkFlow/JobListening';
+// import JobListening from './components/LaborWorkFlow/JobListening';
 import MainPage from './components/LaborWorkFlow/MainPage';
 import OngoingPage from './components/LaborWorkFlow/OngoingPage';
 import WorkInformationPage from './components/LaborWorkFlow/WorkInformationPage';
 import WorkSelectionPage from './components/LaborWorkFlow/WorkSelectionPage';
 import WorkStatusPage from './components/LaborWorkFlow/WorkStatusPage';
-import ApplyingPage from './components/LaborWorkFlow/ApplyingPage'
+
 // Machines Workflow
 import BrwMachineDetails from './components/MachinesWorkflow/BorrowerWorkFlow/BrwMachineDetails';
 import BrwOwnerDetails from './components/MachinesWorkflow/BorrowerWorkFlow/BrwOwnerDetails';
@@ -73,13 +73,11 @@ function App() {
             <Route path="/labor/completed" element={<CompletedPage />} />
             <Route path="/labor/contract" element={<ContractPage />} />
             <Route path="/labor/employee" element={<EmployeePage />} />
-            <Route path="/labor/home" element={<HomePage />} />
             <Route path="/labor/main" element={<MainPage />} />
             <Route path="/labor/ongoing" element={<OngoingPage />} />
             <Route path="/labor/work-information" element={<WorkInformationPage />} />
             <Route path="/labor/work-selection" element={<WorkSelectionPage />} />
             <Route path="/labor/work-status" element={<WorkStatusPage />} />
-            <Route path="/labor/apply-page" element={<ApplyingPage />} />
 
             {/* Machines Workflow */}
             <Route path="/machines/borrower/machines-for-rent" element={<MachinesForRent />} />

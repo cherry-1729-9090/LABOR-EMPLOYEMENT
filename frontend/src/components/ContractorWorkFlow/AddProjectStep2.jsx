@@ -7,7 +7,8 @@ const { Title } = Typography;
 const { Option } = Select;
 
 const AddProject = () => {
-  const {contractorId} = useAppContext();
+  const {contractorId,setProjectId} = useAppContext();
+  console.log('contractorId',contractorId);
   const [projectDetails, setDetails] = useState({
     jobType: '',
     name: '',
@@ -79,6 +80,8 @@ const AddProject = () => {
 
         const createdJob = await createJob(jobData);
         if (createdJob) {
+          console.log('createdJob',createdJob);
+          setProjectId(createdJob._id);
           console.log('Job created:', createdJob);
           navigate('/contractor/add-project-step3', { state: { job: createdJob, projectDetails } });
         } else {
@@ -141,7 +144,7 @@ const AddProject = () => {
             onChange={handleChange}
           />
         </Form.Item>
-        <Form.Item label="Accommodation" required>
+        <Form.Item label="Accommodation" >
           <Checkbox
             checked={projectDetails.accomodation}
             onChange={(e) => handleCheckboxChange('accomodation', e.target.checked)}
@@ -149,7 +152,7 @@ const AddProject = () => {
             Provided
           </Checkbox>
         </Form.Item>
-        <Form.Item label="Transportation" required>
+        <Form.Item label="Transportation" >
           <Checkbox
             checked={projectDetails.transportation}
             onChange={(e) => handleCheckboxChange('transportation', e.target.checked)}

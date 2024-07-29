@@ -25,11 +25,11 @@ const ProjectDetails = () => {
     };
 
     fetchProject();
-  }, []);
+  }, [projectId]);
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5', padding: '24px' }}>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
         <Spin size="large" />
       </div>
     );
@@ -37,12 +37,12 @@ const ProjectDetails = () => {
 
   if (!project) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5', padding: '24px' }}>
-        <Card style={{ width: '100%', maxWidth: '600px', textAlign: 'center' }} bordered={false}>
-          <Title level={2}>Project Not Found</Title>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+        <Card className="w-full max-w-md sm:max-w-lg">
+          <Title level={3} className="text-center">Project Not Found</Title>
           <Button 
             type="primary" 
-            style={{ marginTop: '24px', width: '100%' }} 
+            className="mt-6 w-full"
             onClick={() => navigate('/project-list')}
           >
             Back to Projects
@@ -53,58 +53,58 @@ const ProjectDetails = () => {
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5', padding: '24px' }}>
-      <Card style={{ width: '100%', maxWidth: '800px', borderRadius: '8px' }} bordered={false}>
-        <Title level={2} style={{ textAlign: 'center', marginBottom: '24px' }}>{project.name}</Title>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      <Card className="w-full max-w-lg sm:max-w-2xl">
+        <Title level={3} className="text-center mb-6">{project.name}</Title>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Row gutter={[16, 16]}>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Job Type:</Text> {project.jobType}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Location:</Text> {project.location}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Pay Rate:</Text> ₹{project.payRate} per day
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Skills Required:</Text> {project.skillsRequired}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Workers Required:</Text> {project.workersRequired}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Accommodation Provided:</Text> {project.accomodation ? 'Yes' : 'No'}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Transportation Provided:</Text> {project.transportation ? 'Yes' : 'No'}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Start Date:</Text> {new Date(project.startDate).toLocaleDateString()}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>End Date:</Text> {new Date(project.endDate).toLocaleDateString()}
               </Card>
             </Col>
-            <Col span={12}>
-              <Card style={{ borderRadius: '8px', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Col xs={24} sm={12}>
+              <Card className="shadow-md rounded-lg">
                 <Text strong>Status:</Text> {project.status}
               </Card>
             </Col>
@@ -112,7 +112,7 @@ const ProjectDetails = () => {
         </Space>
         <Button 
           type="primary" 
-          style={{ marginTop: '24px', width: '100%' }} 
+          className="mt-6 w-full"
           onClick={() => navigate('/contractor/project-applications')}
         >
           View Employees

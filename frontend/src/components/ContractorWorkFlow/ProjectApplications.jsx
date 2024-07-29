@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, List, Button, Typography, Spin } from 'antd';
+import { Card, List, Button, Typography, Spin, Avatar } from 'antd';
 import { useAppContext } from '../GlobalContext';
 import { getJobAssignmentsByJobId } from '../../calls/JobAssignmentCalls';
 import { updateJob } from '../../calls/jobCalls';
@@ -8,7 +8,7 @@ import { updateJob } from '../../calls/jobCalls';
 const { Title, Text } = Typography;
 
 const ProjectApplications = () => {
-  const { projectId } = useAppContext();
+  const { projectId, setJobAssignmentId } = useAppContext();
   const [applications, setApplications] = useState([]);
   const [projectStatus, setProjectStatus] = useState('');
   const [loading, setLoading] = useState(true);
@@ -18,8 +18,9 @@ const ProjectApplications = () => {
     const fetchApplications = async () => {
       try {
         const applicationsData = await getJobAssignmentsByJobId(projectId);
-        setApplications(applicationsData.applications || []);
-        setProjectStatus(applicationsData.projectStatus);
+        console.log('Applications Data:', applicationsData); // Debugging log
+        setApplications(applicationsData || []);
+        setProjectStatus(applicationsData[0]?.job.status || '');
       } catch (error) {
         console.error('Error fetching applications:', error);
       } finally {
@@ -66,23 +67,32 @@ const ProjectApplications = () => {
     );
   }
 
+  const handleEmployeeView = (assignmentId) => {
+    console.log('Navigating to employee with ID:', assignmentId); // Debugging log
+    setJobAssignmentId(assignmentId);
+    navigate(`/contractor/employee-details`);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
       <Card className="w-full max-w-2xl">
         <Title level={3} className="text-center">Number of People Applied</Title>
         <div className="space-y-4">
           <List
-            itemLayout="vertical"
+            itemLayout="horizontal"
             dataSource={applications}
-            renderItem={(application, index) => (
+            renderItem={(application) => (
               <List.Item
-                key={index}
-                onClick={() => navigate(`/employee-details/${application.worker._id}`)}
+                key={application._id}
                 className="cursor-pointer hover:bg-gray-50 transition duration-300"
+                onClick={() => handleEmployeeView(application._id)}
               >
+                {console.log('Application:', application)}
+                {console.log('applicationID :', application._id)} 
                 <List.Item.Meta
+                  avatar={<Avatar src={`/${application.worker.workerImage}`} />}
                   title={<Text strong>{application.worker.userId.firstName} {application.worker.userId.lastName}</Text>}
-                  description={<Text>Rating: {application.worker.rating || 'No rating'}</Text>}
+                  description={<Text>Demanded Wage: {application.demandedWage}</Text>}
                 />
               </List.Item>
             )}

@@ -1,37 +1,42 @@
-"use client";
 import React, { useState } from 'react';
 import axios from 'axios';
-import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from './GlobalContext';
+import { Form, Input, Button, Checkbox, Typography, message } from 'antd';
+import './LoginPage.css';
+
+const { Title } = Typography;
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { setMobileNumber } = useAppContext();
   const [localMobileNumber, setLocalMobileNumber] = useState('');
 
-  const handleSubmit = () => {
-    console.log(localMobileNumber);
-    setMobileNumber(localMobileNumber);
-    axios.post('http://localhost:3500/api/auth/send-otp', { mobileNumber: localMobileNumber }, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then((response) => {
+  const handleSubmit = async () => {
+    try {
+      console.log(localMobileNumber);
+      setMobileNumber(localMobileNumber);
+      const response = await axios.post('http://localhost:3500/api/auth/send-otp', { mobileNumber: localMobileNumber }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       console.log(response.data);
+      message.success('OTP sent successfully!');
       // Navigate to OTP Verification page upon successful OTP request
       navigate('/otp-verification');
-    })
-    .catch((error) => {
+    } catch (error) {
       if (error.response) {
         console.error('Response error:', error.response.data);
+        message.error(`Error: ${error.response.data.message}`);
       } else if (error.request) {
         console.error('Request error:', error.request);
+        message.error('Request error. Please try again.');
       } else {
         console.error('Axios error:', error.message);
+        message.error(`Error: ${error.message}`);
       }
-    });
+    }
   };
 
   const handleInputChange = (event) => {
@@ -49,27 +54,41 @@ const LoginPage = () => {
   };
 
   return (
-    <div className='container'>
-      <div className='contUpDiv'>
-        <h1>Login</h1>
-        <div className='mobileNumber'>
-          <label>Enter your mobile number</label>
-          <input
-            type='text'
-            className='mobileinp'
-            placeholder='Enter mobile number'
-            value={localMobileNumber}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
-        <div>
-          <input type='checkbox' /> Remember me
-        </div>
-      </div>
+    <div className="login-container">
+      <div className="login-box">
+        <Title level={2} className="login-title">Login</Title>
+        <Form
+          name="login"
+          initialValues={{ remember: true }}
+          onFinish={handleSubmit}
+        >
+          <Form.Item
+            label="Enter your mobile number"
+            name="mobileNumber"
+            rules={[
+              { required: true, message: 'Please enter your mobile number!' },
+              { pattern: /^\d{10}$/, message: 'Mobile number should be 10 digits long.' }
+            ]}
+          >
+            <Input
+              placeholder="Enter mobile number"
+              value={localMobileNumber}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              maxLength={10}
+            />
+          </Form.Item>
 
-      <div>
-        <button onClick={handleSubmit}>Submit</button>
+          <Form.Item name="remember" valuePropName="checked">
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </div>
   );

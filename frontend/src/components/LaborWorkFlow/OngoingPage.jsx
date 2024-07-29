@@ -1,44 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { List, Button, Typography, Card } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
-import { getJobById } from '../../calls/jobCalls';
+import { List, Button, Typography, Card, Space } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../GlobalContext';
+import { getJobAssignmentsByWorkerId } from '../../calls/JobAssignmentCalls';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const OngoingPage = () => {
+  const { workerId, setProjectId, setJobAssignmentId } = useAppContext();
   const [ongoingWork, setOngoingWork] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchOngoingWork();
-  }, []);
+    const fetchOngoingWork = async () => {
+      try {
+        const jobAssignments = await getJobAssignmentsByWorkerId(workerId);
+        const ongoing = jobAssignments.filter(assignment => assignment.job.status === 'In progress');
+        setOngoingWork(ongoing);
+      } catch (error) {
+        console.error('Error fetching ongoing work:', error);
+      }
+    };
 
-  const fetchOngoingWork = () => {
-    // Simulated data fetch
-    setOngoingWork([]);
+    if (workerId) {
+      fetchOngoingWork();
+    }
+  }, [workerId]);
+
+  const handleNavigation = (jobId, assignmentId) => {
+    setJobAssignmentId(assignmentId);
+    setProjectId(jobId);
+    navigate(`/labor/work-status`);
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#fff1f0', padding: '20px' }}>
-      <Title level={1} style={{ color: '#ff4d4f', marginBottom: '20px', textAlign: 'center' }}>
-        Ongoing Projects
-      </Title>
-      <Card bordered={false} style={{ width: '100%', maxWidth: '800px', margin: '0 auto', borderRadius: '20px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+      <Title level={2} className="text-red-600 mb-8">Ongoing Projects</Title>
+      <Card bordered={false} className="w-full max-w-2xl bg-white shadow-lg rounded-lg">
         <List
-          bordered
+          itemLayout="vertical"
           dataSource={ongoingWork}
           renderItem={work => (
-            <List.Item style={{ borderBottom: '1px solid #ffccc7', padding: '16px 24px' }}>
-              <Link 
-                to={`/labor/work-status/${work.id}`} 
-                style={{ color: '#ff4d4f', fontSize: '18px', fontWeight: '500', textDecoration: 'none' }}
-              >
-                {work.title} - <span style={{ color: '#595959' }}>{work.date}</span>
-              </Link>
+            <List.Item
+              className="cursor-pointer hover:bg-gray-50 transition duration-300"
+              onClick={() => handleNavigation(work.job._id, work._id)}
+            >
+              <List.Item.Meta
+                title={<Title level={4}>{work.job.name}</Title>}
+                description={
+                  <Space direction="vertical">
+                    <Text><strong>Job Type:</strong> {work.job.jobType}</Text>
+                    <Text><strong>Location:</strong> {work.job.location}</Text>
+                    <Text><strong>Pay Rate:</strong> ₹{work.job.payRate} per day</Text>
+                    <Text><strong>Assignment Date:</strong> {new Date(work.assignmentDate).toLocaleDateString()}</Text>
+                  </Space>
+                }
+              />
             </List.Item>
           )}
         />
       </Card>
+      <Button 
+        onClick={() => navigate(-1)} 
+        className="mt-8 bg-red-600 hover:bg-red-700 transition-colors text-lg font-semibold rounded-md shadow-lg px-6 py-3 text-white"
+      >
+        Back
+      </Button>
     </div>
   );
 };
