@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-
 // Load environment variables
 dotenv.config();
 
@@ -13,7 +12,6 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 
 app.use(cors());
 
@@ -35,6 +33,7 @@ const workHistoryRoutes = require('./routes/workHistoryRoutes');
 const ratingsRoutes = require('./routes/ratingsRoutes');
 const authRoutes = require('./routes/authRoutes'); // Assuming you have this route
 const jobAssignmentRoutes = require('./routes/jobAssignmentRoutes'); // Assuming you have this route
+
 // Using routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -48,9 +47,9 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/workhistories', workHistoryRoutes);
 app.use('/api/ratings', ratingsRoutes);
 app.use('/api/jobAssignments', jobAssignmentRoutes); // Using jobAssignmentRoutes
-// Server setu
-const PORT = process.env.PORT || 3500;
 
+// Server setup
+const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

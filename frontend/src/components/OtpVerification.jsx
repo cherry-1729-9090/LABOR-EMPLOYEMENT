@@ -1,3 +1,4 @@
+// src/components/OtpVerification.jsx
 import React, { useState } from 'react';
 import { Input, Button } from 'antd';
 import 'antd/dist/reset.css';
@@ -12,7 +13,7 @@ function OtpVerification() {
   const location = useLocation();
   const { mobileNumber } = useAppContext();
   const { setUserId } = useAppContext();
-  
+
   function handleOtpChange(e, index) {
     const value = e.target.value;
     if (/^[0-9]$/.test(value) || value === '') {
@@ -51,26 +52,14 @@ function OtpVerification() {
     console.log(values);
     
     try {
-        const response = await fetch('https://labor-employement.onrender.com/api/auth/verify-otp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                mobileNumber: mobileNumber,
-                otpCode: values
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (data.message === 'OTP verified successfully') {
+        // Verify OTP using Firebase
+        const result = await window.confirmationResult.confirm(values);
+        if (result.user) {
+            console.log("OTP verified successfully!");
             try {
                 const userResponse = await getUserByNumber(mobileNumber);
                 if (userResponse && !userResponse.message) {
+                    console.log("User Response:");
                     console.log(userResponse);
                     console.log(userResponse._id);
                     setUserId(userResponse._id);
