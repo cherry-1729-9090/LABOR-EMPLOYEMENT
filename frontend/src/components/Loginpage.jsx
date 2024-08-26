@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from './GlobalContext';
 import { Form, Input, Button, Checkbox, Typography, message } from 'antd';
 import './LoginPage.css';
+import { auth } from '../config/firebase'; // Ensure this path is correct
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 
 const { Title } = Typography;
 
@@ -11,31 +12,97 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { setMobileNumber } = useAppContext();
   const [localMobileNumber, setLocalMobileNumber] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // useEffect(() => {
+  //   try {
+  //     console.log("Initializing reCAPTCHA...");
+  //     if (!window.recaptchaVerifier) {
+  //       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
+  //         'size': 'invisible',
+  //         'callback': (response) => {
+  //           // reCAPTCHA solved, allow signInWithPhoneNumber.
+  //         },
+  //       });
+
+  //       // window.recaptchaVerifier.render().catch((error) => {
+  //       //   console.error('Error rendering reCAPTCHA:', error);
+  //       // });
+  //     }
+  //   } catch (error) {
+  //     console.error('Error initializing reCAPTCHA:', error);
+  //   }
+  // }, []);
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+  
     try {
       console.log(localMobileNumber);
       setMobileNumber(localMobileNumber);
-      const response = await axios.post('https://labor-employement.onrender.com/api/auth/send-otp', { mobileNumber: localMobileNumber }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log(response.data);
-      message.success('OTP sent successfully!');
-      // Navigate to OTP Verification page upon successful OTP request
-      navigate('/otp-verification');
-    } catch (error) {
-      if (error.response) {
-        console.error('Response error:', error.response.data);
-        message.error(`Error: ${error.response.data.message}`);
-      } else if (error.request) {
-        console.error('Request error:', error.request);
-        message.error('Request error. Please try again.');
-      } else {
-        console.error('Axios error:', error.message);
-        message.error(`Error: ${error.message}`);
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
       }
+  
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'invisible',
+          'callback': (response) => {
+            console.log('reCAPTCHA solved:', response);
+            sendOTP();
+          },
+          'expired-callback': () => {
+            console.log('reCAPTCHA expired');
+            window.recaptchaVerifier.clear();
+            window.recaptchaVerifier = null;
+            setIsSubmitting(false);
+            message.error('reCAPTCHA expired. Please try again.');
+          }
+        });
+      }
+  
+      const sendOTP = async () => {
+        try {
+          const phoneNumber = `+91${localMobileNumber}`;
+          console.log("Attempting to send OTP to:", phoneNumber);
+          const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+          console.log("OTP sent successfully");
+          window.confirmationResult = confirmationResult;
+          message.success('OTP sent successfully!');
+          navigate('/otp-verification');
+        } catch (error) {
+          console.error("Detailed error during signInWithPhoneNumber:", error);
+          console.error("Error code:", error.code);
+          console.error("Error message:", error.message);
+          message.error(`Failed to send OTP: ${error.message}`);
+          if (window.recaptchaVerifier) {
+            window.recaptchaVerifier.clear();
+            window.recaptchaVerifier = null;
+          }
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+  
+      if (!window.recaptchaVerifier.widgetId) {
+        console.log("Rendering reCAPTCHA");
+        await window.recaptchaVerifier.render();
+      }
+      
+      sendOTP();
+  
+    } catch (error) {
+      console.error('Detailed error during OTP request:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      message.error(`Error: ${error.message}`);
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -43,7 +110,7 @@ const LoginPage = () => {
     const value = event.target.value;
     if (/^\d*$/.test(value) && value.length <= 10) {
       setLocalMobileNumber(value);
-      setMobileNumber(value); // Set the mobile number in the global context
+      setMobileNumber(value);
     }
   };
 
@@ -90,6 +157,7 @@ const LoginPage = () => {
           </Form.Item>
         </Form>
       </div>
+      <div id="recaptcha-container"></div>
     </div>
   );
 };
