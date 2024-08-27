@@ -82,7 +82,7 @@ function RoleSelection() {
             navigate('/contractor/project-list');
             break;
           case 'worker':
-            navigate('/labor/applied');
+            navigate('/labor/main');
             break;
           default:
             break;
