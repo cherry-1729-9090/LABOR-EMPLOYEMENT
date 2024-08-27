@@ -2,11 +2,21 @@ import { axiosInstance } from "./axiosInstance";
 
 export const getJobs = async () => {
     try {
-        const response = await axiosInstance.get('/jobs');
+        const response = await axiosInstance.get('/jobs/getAllJobs');
         return response.data;
     } catch (error) {
         console.error('Error fetching jobs:', error);
         return [];
+    }
+}
+
+export const getJobById = async (jobId) => {
+    try {
+        const response = await axiosInstance.get(`/jobs/${jobId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching job by id:', error);
+        return null;
     }
 }
 
@@ -30,22 +40,19 @@ export const createJob = async (job) => {
     }
 }
 
-
 export const updateJob = async (jobId, job) => {
     console.log('jobId:', jobId);
     console.log('job data:', job);
     try {
-      const response = await axiosInstance.put(`/jobs/update/${jobId}`, job);
-      return response.data;
+        const response = await axiosInstance.put(`/jobs/update/${jobId}`, job);
+        return response.data;
     } catch (error) {
-      console.error('Error updating job:', error.response ? error.response.data : error.message);
-      return null;
+        console.error('Error updating job:', error.response ? error.response.data : error.message);
+        return null;
     }
-  }
-  
+}
 
 export const deleteJob = async (jobId) => {
-
     try {
         const response = await axiosInstance.delete(`/jobs/${jobId}`);
         return response.data;
@@ -54,14 +61,3 @@ export const deleteJob = async (jobId) => {
         return null;
     }
 }
-
-export const getJobById = async (jobId) => {
-    try {
-        const response = await axiosInstance.get(`/jobs/${jobId}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching job by id:', error);
-        return null;
-    }
-}
-

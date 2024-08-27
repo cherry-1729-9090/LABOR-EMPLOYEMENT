@@ -3,7 +3,7 @@ import { Card, Radio, Typography, Space, message, Spin } from 'antd';
 import { useAppContext } from './GlobalContext';
 import { getUserById, updateUser } from '../calls/userCalls';
 import { createContractor, getContractorByUserId } from '../calls/contractorCalls'; 
-import { createLabourWorker, getLabourWorkerByUserId } from '../calls/employees'; 
+import { getLabourWorkerByUserId, createLabourWorker } from '../calls/employees';
 import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
@@ -32,10 +32,6 @@ function RoleSelection() {
     switch (role) {
       case 'hire_labor':
         return 'contractor';
-      // case 'sell_machines':
-      //   return 'seller';
-      // case 'rent_machines':
-      //   return 'buyer';
       case 'worker':
         return 'labor_worker';
       default:
@@ -49,24 +45,29 @@ function RoleSelection() {
     try {
       if (role === 'hire_labor') {
         const contractor = await getContractorByUserId(userId);
-        if (contractor) {
+        if (contractor && contractor._id) { // Ensure contractor and _id exist
           console.log('this is the contractor fetched in role-selection page', contractor);
-          console.log(contractor.userId._id)
-          console.log(contractor._id)
           setContractorId(contractor._id);
         } else {
           const newContractor = await createContractor({ userId }); // Adjust fields as needed
-          console.log('this is the new contractor created in role-selection page', newContractor);
-          setContractorId(newContractor._id);
+          if (newContractor && newContractor._id) { // Ensure newContractor and _id exist
+            console.log('this is the new contractor created in role-selection page', newContractor);
+            setContractorId(newContractor._id);
+          } else {
+            throw new Error('Failed to create contractor');
+          }
         }
       } else if (role === 'worker') {
         const worker = await getLabourWorkerByUserId(userId);
-        if (worker) {
-          console.log('this is the worker fetched in role-selection page', worker);
+        if (worker && worker._id) { // Ensure worker and _id exist
           setWorkerId(worker._id);
         } else {
           const newWorker = await createLabourWorker({ userId, workerImage: 'default_image.png' });
-          setWorkerId(newWorker._id);
+          if (newWorker && newWorker._id) { // Ensure newWorker and _id exist
+            setWorkerId(newWorker._id);
+          } else {
+            throw new Error('Failed to create worker');
+          }
         }
       }
 
@@ -81,13 +82,7 @@ function RoleSelection() {
             navigate('/contractor/project-list');
             break;
           case 'worker':
-            navigate('/labor/main');
-            break;
-          case 'sell_machines':
-            navigate('/machines/rentee/rentee-machines');
-            break;
-          case 'rent_machines':
-            navigate('/machines/borrower/machines-rented');
+            navigate('/labor/applied');
             break;
           default:
             break;
@@ -111,8 +106,6 @@ function RoleSelection() {
 
   const options = [
     { label: 'Hire labor', value: 'hire_labor' },
-    // { label: 'Sell Machines', value: 'sell_machines' },
-    // { label: 'Rent Machines', value: 'rent_machines' },
     { label: 'Worker', value: 'worker' },
   ];
 
