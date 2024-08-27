@@ -14,6 +14,10 @@ export const AppProvider = ({ children }) => {
   const [contractorId, setContractorId] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [projectId, setProjectId] = useState('');
+  const [workerId, setWorkerId] = useState('');
+  const [JobAssignmentId, setJobAssignmentId] = useState('');
+
+
   return (
     <AppContext.Provider value={{
       userId, setUserId,

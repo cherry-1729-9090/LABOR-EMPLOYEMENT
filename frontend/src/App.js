@@ -22,8 +22,6 @@ import AppliedPage from './components/LaborWorkFlow/AppliedPage';
 import CompletedPage from './components/LaborWorkFlow/CompletedPage';
 import ContractPage from './components/LaborWorkFlow/ContractPage';
 import EmployeePage from './components/LaborWorkFlow/EmployeePage';
-import HomePage from './components/LaborWorkFlow/HomePage';
-// import JobListening from './components/LaborWorkFlow/JobListening';
 import MainPage from './components/LaborWorkFlow/MainPage';
 import OngoingPage from './components/LaborWorkFlow/OngoingPage';
 import WorkInformationPage from './components/LaborWorkFlow/WorkInformationPage';
